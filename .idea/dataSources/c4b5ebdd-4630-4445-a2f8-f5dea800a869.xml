@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="MySQL - Jaguar@localhost">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="2.6">
+    <schema id="1" name="Jaguar">
+      <visible>1</visible>
+    </schema>
+    <schema id="2" name="Airjet"/>
+    <schema id="3" name="develop_common"/>
+    <schema id="4" name="information_schema"/>
+    <schema id="5" name="lanneret"/>
+    <schema id="6" name="mysql"/>
+    <schema id="7" name="performance_schema"/>
+    <schema id="8" name="planat"/>
+    <schema id="9" name="test"/>
+    <table id="10" parent="1" name="uar_user"/>
+    <table id="11" parent="1" name="uar_system"/>
+    <column id="12" parent="10" name="id">
+      <mandatory>1</mandatory>
+      <data-type>int(10) unsigned|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="13" parent="10" name="sys_id">
+      <mandatory>1</mandatory>
+      <data-type>int(10) unsigned|0</data-type>
+    </column>
+    <column id="14" parent="10" name="sys_uid">
+      <mandatory>1</mandatory>
+      <data-type>char(32)|0</data-type>
+      <default-expression>&apos;&apos;</default-expression>
+    </column>
+    <column id="15" parent="10" name="os">
+      <mandatory>1</mandatory>
+      <data-type>tinyint(2)|0</data-type>
+    </column>
+    <column id="16" parent="10" name="voucher">
+      <mandatory>1</mandatory>
+      <data-type>varchar(128)|0</data-type>
+      <default-expression>&apos;&apos;</default-expression>
+    </column>
+    <column id="17" parent="10" name="create_at">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+      <default-expression>CURRENT_TIMESTAMP</default-expression>
+    </column>
+    <column id="18" parent="10" name="update_at">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="19" parent="10" name="state">
+      <mandatory>1</mandatory>
+      <data-type>tinyint(2)|0</data-type>
+      <default-expression>&apos;0&apos;</default-expression>
+    </column>
+    <index id="20" parent="10" name="sys_id">
+      <columns>sys_id
+sys_uid</columns>
+      <desc-columns></desc-columns>
+      <unique>1</unique>
+    </index>
+    <key id="21" parent="10" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <key id="22" parent="10" name="sys_id">
+      <columns>sys_id
+sys_uid</columns>
+      <underlying-index>sys_id</underlying-index>
+    </key>
+    <column id="23" parent="11" name="id">
+      <mandatory>1</mandatory>
+      <data-type>int(10) unsigned|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="24" parent="11" name="name">
+      <mandatory>1</mandatory>
+      <data-type>char(64)|0</data-type>
+      <default-expression>&apos;&apos;</default-expression>
+    </column>
+    <column id="25" parent="11" name="description">
+      <mandatory>1</mandatory>
+      <data-type>varchar(512)|0</data-type>
+    </column>
+    <column id="26" parent="11" name="android_config">
+      <mandatory>1</mandatory>
+      <data-type>varchar(512)|0</data-type>
+      <default-expression>&apos;&apos;</default-expression>
+    </column>
+    <column id="27" parent="11" name="ios_config">
+      <mandatory>1</mandatory>
+      <data-type>varchar(512)|0</data-type>
+      <default-expression>&apos;&apos;</default-expression>
+    </column>
+    <column id="28" parent="11" name="create_at">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+      <default-expression>CURRENT_TIMESTAMP</default-expression>
+    </column>
+    <column id="29" parent="11" name="update_at">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="30" parent="11" name="state">
+      <mandatory>1</mandatory>
+      <data-type>tinyint(2)|0</data-type>
+      <default-expression>&apos;0&apos;</default-expression>
+    </column>
+    <key id="31" parent="11" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+  </database-model>
+</dataSource>

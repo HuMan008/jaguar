@@ -1,0 +1,37 @@
+jaguar:
+  host: 0.0.0.0
+  port: 18090
+  push:
+    apple:
+      certificate: apns.p12
+      password: 123456
+      topic: guotong.GtOilStorage
+    leancloud:
+      appId: p8MUPXn8A5wSYpTI4zvaSJ5n-gzGzoHsz
+      appKey: gOXYfGjgWSOkiaihTR7HlEKw
+      masterKey: Lirf0V30pnNmvkdvLoaubjmY
+
+logging:
+  level: debug
+  path: logs
+spring:
+  redis:
+    database: 9
+    host: "201.201.201.173"
+    port: 6379
+    timeout: 5000
+    pool:
+      max-active: 64
+      max-idle: 8
+      max-wait: -1
+  data:
+    mongodb:
+      database: Jaguar
+      host: 201.201.201.174
+      port: 27017
+
+mybatis:
+  mapper-locations:
+    - mapper/*.xml
+
+

@@ -1,0 +1,6 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="myName" value="defaults" />
+    <option name="notice" value="Copyright (C) &amp;#36;today.year.  Iusworks, Inc - All Rights Reserved&#10; &#10;Unauthorized copying of this file, via any medium is strictly prohibited&#10;Proprietary and confidential&#10; &#10;&amp;#36;project.name &amp;#36;file.qualifiedClassName&#10; &#10;cluries &lt;cluries@me.com&gt;,  &amp;#36;today.format(&quot;MMMMM yyyy&quot;)&#10; &#10;LastModified: &amp;#36;file.lastModified&#10; " />
+  </copyright>
+</component>
