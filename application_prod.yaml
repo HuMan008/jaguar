@@ -16,8 +16,8 @@ logging:
   path: logs
 spring:
   redis:
-    database: 9
-    host: "201.201.201.173"
+    database: 5
+    host: 127.0.0.1
     port: 6379
     timeout: 5000
     pool:
@@ -27,7 +27,7 @@ spring:
   data:
     mongodb:
       database: Jaguar
-      host: 201.201.201.174
+      host: 127.0.0.1
       port: 27017
 
 

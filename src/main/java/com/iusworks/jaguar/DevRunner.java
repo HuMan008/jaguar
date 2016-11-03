@@ -16,7 +16,6 @@ package com.iusworks.jaguar;
 
 import com.iusworks.jaguar.provider.apple.APNS;
 import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
-import com.iusworks.jaguar.service.SystemService;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
 import com.relayrides.pushy.apns.util.TokenUtil;
@@ -39,11 +38,10 @@ public class DevRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (true) {
-            noti_ios();
-        }
-
-        noti_android();
+//        if (true) {
+//            noti_ios();
+//        }
+//        noti_android();
     }
 
     private Notification genNotification() {
