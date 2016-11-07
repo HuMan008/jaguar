@@ -19,6 +19,8 @@ spring:
     database: 9
     host: "201.201.201.173"
     port: 6379
+
+
     timeout: 5000
     pool:
       max-active: 64
@@ -26,7 +28,7 @@ spring:
       max-wait: -1
   data:
     mongodb:
-      database: Jaguar
+      database: JaguarDev
       host: 201.201.201.174
       port: 27017
 

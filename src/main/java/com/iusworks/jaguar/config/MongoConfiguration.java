@@ -18,6 +18,9 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.WriteConcern;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.convert.*;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 @Configuration
 public class MongoConfiguration {
@@ -32,4 +35,17 @@ public class MongoConfiguration {
         builder.serverSelectionTimeout(1000);
         return builder.build();
     }
+
+
+    @Bean
+    public MappingMongoConverter mappingMongoConverter(MongoDbFactory mongoDbFactory,
+                                                       MongoMappingContext mongoMappingContext,
+                                                       CustomConversions customConversions) throws Exception {
+        DbRefResolver dbRefResolver = new DefaultDbRefResolver(mongoDbFactory);
+        MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, mongoMappingContext);
+        converter.setCustomConversions(customConversions);
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+        return converter;
+    }
+
 }

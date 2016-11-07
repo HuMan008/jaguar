@@ -11,19 +11,24 @@
  * LastModified: 9/24/16 11:46 PM
  *
  */
-
+/*
 package com.iusworks.jaguar;
 
+import com.iusworks.jaguar.dao.NotificationDAO;
+import com.iusworks.jaguar.domain.Notifi;
 import com.iusworks.jaguar.provider.apple.APNS;
 import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
 import com.relayrides.pushy.apns.util.TokenUtil;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 
 @Component
 public class DevRunner implements CommandLineRunner {
@@ -36,12 +41,29 @@ public class DevRunner implements CommandLineRunner {
     @Autowired
     private LeanCloudPush leanCloudPush;
 
+
+    @Autowired
+    private NotificationDAO notificationDAO;
+
     @Override
     public void run(String... args) throws Exception {
 //        if (true) {
 //            noti_ios();
 //        }
 //        noti_android();
+
+//        Notifi notification = new Notifi();
+//        notification.setId((new ObjectId()).toHexString());
+//        notification.setSid((short)999);
+//        notification.setUid("test");
+//        notification.setAction("test");
+//        notification.setTitle("test");
+//        notification.setAlert("devtest");
+//        notification.setDatetime((int) Instant.now().getEpochSecond());
+//        notification.setStoraged("devtest");
+//        notificationDAO.insert(notification);
+
+
     }
 
     private Notification genNotification() {
@@ -70,3 +92,5 @@ public class DevRunner implements CommandLineRunner {
     }
 
 }
+
+*/
