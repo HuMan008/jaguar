@@ -79,6 +79,12 @@ public class LeanCloudPush {
             data.put("ext", notification.getExt());
         }
 
+
+        if (notification.getSound() != null) {
+            data.put("sound", notification.getSound());
+        }
+
+
         data.put("silent", true);
         data.put("alert", notification.getAlert());
 

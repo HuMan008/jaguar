@@ -20,6 +20,8 @@ import com.iusworks.jaguar.service.DeviceService;
 import com.iusworks.jaguar.service.NotificationService;
 import com.iusworks.jaguar.thrift.*;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,8 @@ import java.util.Map;
 
 @Service
 public class JaguarServiceImpl implements JaguarService.Iface {
+
+    private static Logger logger = LoggerFactory.getLogger(JaguarServiceImpl.class);
 
     @Autowired
     private DeviceService deviceService;
@@ -55,7 +59,7 @@ public class JaguarServiceImpl implements JaguarService.Iface {
         }
 
         Notifi notifi = notificationService.persist(notificationRequest);
-
+        logger.info("NotificationRequest:{}", notifi);
 
         Map<String, String> ext = new HashMap<>();
         ext.put("notifyId", notifi.getId());

@@ -20,12 +20,12 @@ import com.iusworks.jaguar.domain.System;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 
-//TODO 第一期不做
-//@Service
+@Service
 public class SystemService {
 
     private static Logger logger = LoggerFactory.getLogger(SystemService.class);
