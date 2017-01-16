@@ -86,9 +86,13 @@ public class NotificationService {
         logger.info("batchNotify");
 
         leanCloudPush.push(notification, null);
-        List<Device> ds = deviceDAO.devicesOnlyIncludeVouch(notificationRequest.getSystemId(), DeviceState.Normal.getValue());
+
+        NotificationRequest nr = notificationRequest.deepCopy();
+        List<Device> ds = deviceDAO.devicesOnlyIncludeVouchAndUid(notificationRequest.getSystemId(), DeviceState.Normal.getValue());
         for (Device d : ds) {
             apns.push(notification, d.getVouch());
+            nr.getNotification().setUid(d.getUid());
+            persist(nr);
         }
     }
 

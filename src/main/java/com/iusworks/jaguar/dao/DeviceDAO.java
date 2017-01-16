@@ -50,10 +50,10 @@ public class DeviceDAO extends GenericMongoDAO<Device> {
         return devices.get(0);
     }
 
-    public List<Device> devicesOnlyIncludeVouch(Short systemId, Byte deviceType) {
+    public List<Device> devicesOnlyIncludeVouchAndUid(Short systemId, Byte deviceType) {
         Criteria criteria = Criteria.where("sid").is(systemId).and("type").is(deviceType).and("state").is(DeviceState.Normal.getValue());
         Query query = Query.query(criteria);
-        query.fields().include("vouch");
+        query.fields().include("vouch").include("uid");
 
         return mongoTemplate.find(query, Device.class);
     }
