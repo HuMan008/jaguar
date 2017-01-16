@@ -89,7 +89,9 @@ public class LeanCloudPush {
         data.put("alert", notification.getAlert());
 
         Map<String, String> where = new HashedMap();
-        where.put("installationId", installationId);
+        if (installationId != null) {
+            where.put("installationId", installationId);
+        }
         Map<String, Object> payload = new HashedMap();
         payload.put("data", data);
         payload.put("where", where);

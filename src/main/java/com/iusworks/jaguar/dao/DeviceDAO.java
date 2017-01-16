@@ -15,6 +15,7 @@
 package com.iusworks.jaguar.dao;
 
 import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.domain.DeviceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -47,5 +48,13 @@ public class DeviceDAO extends GenericMongoDAO<Device> {
             return null;
         }
         return devices.get(0);
+    }
+
+    public List<Device> devicesOnlyIncludeVouch(Short systemId, Byte deviceType) {
+        Criteria criteria = Criteria.where("sid").is(systemId).and("type").is(deviceType).and("state").is(DeviceState.Normal.getValue());
+        Query query = Query.query(criteria);
+        query.fields().include("vouch");
+
+        return mongoTemplate.find(query, Device.class);
     }
 }

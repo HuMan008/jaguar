@@ -7,9 +7,9 @@ jaguar:
       password: 123456
       topic: guotong.GtOilStorage
     leancloud:
-      appId: p8MUPXn8A5wSYpTI4zvaSJ5n-gzGzoHsz
-      appKey: gOXYfGjgWSOkiaihTR7HlEKw
-      masterKey: Lirf0V30pnNmvkdvLoaubjmY
+      appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
+      appKey: 7WsfQY6CM52MhX2BeF9XcOyN
+      masterKey: LlCowinwbCplX4lxc4QCIl26
 
 logging:
   level: debug

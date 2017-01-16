@@ -18,6 +18,7 @@ package com.iusworks.jaguar.service;
 import com.iusworks.jaguar.dao.DeviceDAO;
 import com.iusworks.jaguar.dao.NotificationDAO;
 import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.domain.DeviceState;
 import com.iusworks.jaguar.domain.Notifi;
 import com.iusworks.jaguar.provider.apple.APNS;
 import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
@@ -57,9 +58,15 @@ public class NotificationService {
      * @param notificationRequest
      */
     public void notify(NotificationRequest notificationRequest) {
+
+        if (notificationRequest.getNotification().getUid() == null) {
+            batchAllNotify(notificationRequest);
+            return;
+        }
+
         Notification notification = notificationRequest.getNotification();
         Device device = deviceDAO.fetchBySystemIdAndUid(notificationRequest.getSystemId(), notification.getUid());
-        if (device == null || device.getState() != 0) {
+        if (device == null || device.getState().byteValue() != DeviceState.Normal.getValue().byteValue()) {
             logger.error("Device error:{}", device);
             return;
         }
@@ -71,6 +78,17 @@ public class NotificationService {
             leanCloudPush.push(notification, device.getVouch());
         } else {
             logger.error("Error Device Type:{}", device.getType());
+        }
+    }
+
+    private void batchAllNotify(NotificationRequest notificationRequest) {
+        Notification notification = notificationRequest.getNotification();
+        logger.info("batchNotify");
+
+        leanCloudPush.push(notification, null);
+        List<Device> ds = deviceDAO.devicesOnlyIncludeVouch(notificationRequest.getSystemId(), DeviceState.Normal.getValue());
+        for (Device d : ds) {
+            apns.push(notification, d.getVouch());
         }
     }
 
