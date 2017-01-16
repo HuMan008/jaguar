@@ -88,9 +88,11 @@ public class NotificationService {
         leanCloudPush.push(notification, null);
 
         NotificationRequest nr = notificationRequest.deepCopy();
-        List<Device> ds = deviceDAO.devicesOnlyIncludeVouchAndUid(notificationRequest.getSystemId(), (byte) DeviceType.iOS.getValue());
+        List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId());
         for (Device d : ds) {
-            apns.push(notification, d.getVouch());
+            if (d.getType().intValue() == DeviceType.iOS.getValue()) {
+                apns.push(notification, d.getVouch());
+            }
             nr.getNotification().setUid(d.getUid());
             persist(nr);
         }
