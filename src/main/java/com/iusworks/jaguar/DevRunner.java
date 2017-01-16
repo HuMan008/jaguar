@@ -11,24 +11,23 @@
  * LastModified: 9/24/16 11:46 PM
  *
  */
+
 /*
 package com.iusworks.jaguar;
 
 import com.iusworks.jaguar.dao.NotificationDAO;
-import com.iusworks.jaguar.domain.Notifi;
 import com.iusworks.jaguar.provider.apple.APNS;
 import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
+import com.iusworks.jaguar.service.NotificationService;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
+import com.iusworks.jaguar.thrift.NotificationRequest;
 import com.relayrides.pushy.apns.util.TokenUtil;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 
 @Component
 public class DevRunner implements CommandLineRunner {
@@ -44,6 +43,9 @@ public class DevRunner implements CommandLineRunner {
 
     @Autowired
     private NotificationDAO notificationDAO;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -64,6 +66,11 @@ public class DevRunner implements CommandLineRunner {
 //        notificationDAO.insert(notification);
 
 
+        Notification notification = genNotification();
+        NotificationRequest notificationRequest = new NotificationRequest();
+        notificationRequest.setSystemId((short) 4);
+        notificationRequest.setNotification(notification);
+        notificationService.notify(notificationRequest);
     }
 
     private Notification genNotification() {
