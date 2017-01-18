@@ -35,6 +35,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class NotificationService {
@@ -53,6 +55,7 @@ public class NotificationService {
     @Autowired
     private NotificationDAO notificationDAO;
 
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**
      * @param notificationRequest
@@ -82,20 +85,8 @@ public class NotificationService {
     }
 
     private void batchAllNotify(NotificationRequest notificationRequest) {
-        Notification notification = notificationRequest.getNotification();
-        logger.info("batchNotify");
-
-        leanCloudPush.push(notification, null);
-
-        NotificationRequest nr = notificationRequest.deepCopy();
-        List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId());
-        for (Device d : ds) {
-            if (d.getType().intValue() == DeviceType.iOS.getValue()) {
-                apns.push(notification, d.getVouch());
-            }
-            nr.getNotification().setUid(d.getUid());
-            persist(nr);
-        }
+        BatchAllNotifyWorker worker = new BatchAllNotifyWorker(notificationRequest);
+        executorService.execute(worker);
     }
 
     /**
@@ -154,4 +145,33 @@ public class NotificationService {
         return notificationHistory;
     }
 
+
+    private class BatchAllNotifyWorker implements Runnable {
+
+        private NotificationRequest notificationRequest;
+
+        public BatchAllNotifyWorker(NotificationRequest notificationRequest) {
+            this.notificationRequest = notificationRequest;
+        }
+
+        @Override
+        public void run() {
+            Notification notification = notificationRequest.getNotification();
+            logger.info("batchNotify");
+
+            leanCloudPush.push(notification, null);
+
+            NotificationRequest nr = notificationRequest.deepCopy();
+            List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId());
+            for (Device d : ds) {
+                if (d.getType().intValue() == DeviceType.iOS.getValue()) {
+                    apns.push(notification, d.getVouch());
+                }
+                nr.getNotification().setUid(d.getUid());
+                persist(nr);
+            }
+        }
+
+
+    }
 }
