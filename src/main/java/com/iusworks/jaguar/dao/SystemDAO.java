@@ -16,13 +16,13 @@ package com.iusworks.jaguar.dao;
 
 
 import com.iusworks.jaguar.domain.System;
+import org.springframework.stereotype.Component;
 //import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 
-// TODO 第一期不做
-//@Component
+@Component
 public class SystemDAO extends GenericMongoDAO<System> {
 
     public List<System> findAll() {

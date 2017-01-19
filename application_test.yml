@@ -30,6 +30,8 @@ spring:
       host: 201.201.201.174
       port: 27017
 
-
+mybatis:
+  mapper-locations:
+    - mapper/*.xml
 
 

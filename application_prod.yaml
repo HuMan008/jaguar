@@ -7,17 +7,17 @@ jaguar:
       password: 123456
       topic: guotong.GtOilStorage
     leancloud:
-      appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
-      appKey: 7WsfQY6CM52MhX2BeF9XcOyN
-      masterKey: LlCowinwbCplX4lxc4QCIl26
+      appId: p8MUPXn8A5wSYpTI4zvaSJ5n-gzGzoHsz
+      appKey: gOXYfGjgWSOkiaihTR7HlEKw
+      masterKey: Lirf0V30pnNmvkdvLoaubjmY
 
 logging:
   level: debug
   path: logs
 spring:
   redis:
-    database: 9
-    host: "201.201.201.173"
+    database: 5
+    host: 127.0.0.1
     port: 6379
     timeout: 5000
     pool:
@@ -27,7 +27,7 @@ spring:
   data:
     mongodb:
       database: Jaguar
-      host: 201.201.201.174
+      host: 127.0.0.1
       port: 27017
 
 

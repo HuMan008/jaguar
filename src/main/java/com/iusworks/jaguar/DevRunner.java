@@ -11,14 +11,17 @@
  * LastModified: 9/24/16 11:46 PM
  *
  */
+/*
 
 package com.iusworks.jaguar;
 
+import com.iusworks.jaguar.dao.NotificationDAO;
 import com.iusworks.jaguar.provider.apple.APNS;
 import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
-import com.iusworks.jaguar.service.SystemService;
+import com.iusworks.jaguar.service.NotificationService;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
+import com.iusworks.jaguar.thrift.NotificationRequest;
 import com.relayrides.pushy.apns.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +40,32 @@ public class DevRunner implements CommandLineRunner {
     @Autowired
     private LeanCloudPush leanCloudPush;
 
+
+    @Autowired
+    private NotificationDAO notificationDAO;
+
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
     public void run(String... args) throws Exception {
-        if (true) {
-            noti_ios();
-        }
+//        if (true) {
+//            noti_ios();
+//        }
+//        noti_android();
 
-        noti_android();
+//        Notifi notification = new Notifi();
+//        notification.setId((new ObjectId()).toHexString());
+//        notification.setSid((short)999);
+//        notification.setUid("test");
+//        notification.setAction("test");
+//        notification.setTitle("test");
+//        notification.setAlert("devtest");
+//        notification.setDatetime((int) Instant.now().getEpochSecond());
+//        notification.setStoraged("devtest");
+//        notificationDAO.insert(notification);
+
+        notificationService.histories((short)4, "a", 1);
     }
 
     private Notification genNotification() {
@@ -72,3 +94,5 @@ public class DevRunner implements CommandLineRunner {
     }
 
 }
+*/
+

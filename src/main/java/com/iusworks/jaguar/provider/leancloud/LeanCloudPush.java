@@ -79,11 +79,19 @@ public class LeanCloudPush {
             data.put("ext", notification.getExt());
         }
 
+
+        if (notification.getSound() != null) {
+            data.put("sound", notification.getSound());
+        }
+
+
         data.put("silent", true);
         data.put("alert", notification.getAlert());
 
         Map<String, String> where = new HashedMap();
-        where.put("installationId", installationId);
+        if (installationId != null) {
+            where.put("installationId", installationId);
+        }
         Map<String, Object> payload = new HashedMap();
         payload.put("data", data);
         payload.put("where", where);
