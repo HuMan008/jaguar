@@ -67,7 +67,7 @@ public class JaguarServiceImpl implements JaguarService.Iface {
             ext.putAll(notificationRequest.getNotification().getExt());
         }
         notificationRequest.getNotification().setExt(ext);
-        notificationService.notify(notificationRequest);
+        notificationService.notify(notificationRequest, notifi.getId());
 
         return true;
     }

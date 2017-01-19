@@ -58,9 +58,10 @@ public class NotificationService {
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**
+     * @Unused notifyId
      * @param notificationRequest
      */
-    public void notify(NotificationRequest notificationRequest) {
+    public void notify(NotificationRequest notificationRequest, String notifyId) {
 
         if (notificationRequest.getNotification().getUid() == null) {
             batchAllNotify(notificationRequest);
@@ -88,6 +89,7 @@ public class NotificationService {
         BatchAllNotifyWorker worker = new BatchAllNotifyWorker(notificationRequest);
         executorService.execute(worker);
     }
+
 
     /**
      * @param notificationRequest
@@ -157,21 +159,13 @@ public class NotificationService {
         @Override
         public void run() {
             Notification notification = notificationRequest.getNotification();
-            logger.info("batchNotify");
-
             leanCloudPush.push(notification, null);
 
-            NotificationRequest nr = notificationRequest.deepCopy();
-            List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId());
+            List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId(), DeviceType.iOS.getValue());
             for (Device d : ds) {
-                if (d.getType().intValue() == DeviceType.iOS.getValue()) {
-                    apns.push(notification, d.getVouch());
-                }
-                nr.getNotification().setUid(d.getUid());
-                persist(nr);
+                apns.push(notification, d.getVouch());
             }
         }
-
 
     }
 }

@@ -11,8 +11,8 @@
  * LastModified: 9/24/16 11:46 PM
  *
  */
-
 /*
+
 package com.iusworks.jaguar;
 
 import com.iusworks.jaguar.dao.NotificationDAO;
@@ -65,12 +65,7 @@ public class DevRunner implements CommandLineRunner {
 //        notification.setStoraged("devtest");
 //        notificationDAO.insert(notification);
 
-
-        Notification notification = genNotification();
-        NotificationRequest notificationRequest = new NotificationRequest();
-        notificationRequest.setSystemId((short) 4);
-        notificationRequest.setNotification(notification);
-        notificationService.notify(notificationRequest);
+        notificationService.histories((short)4, "a", 1);
     }
 
     private Notification genNotification() {
@@ -99,5 +94,5 @@ public class DevRunner implements CommandLineRunner {
     }
 
 }
-
 */
+
