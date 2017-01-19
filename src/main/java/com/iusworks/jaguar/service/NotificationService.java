@@ -58,8 +58,8 @@ public class NotificationService {
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**
-     * @Unused notifyId
      * @param notificationRequest
+     * @Unused notifyId
      */
     public void notify(NotificationRequest notificationRequest, String notifyId) {
 
@@ -125,7 +125,7 @@ public class NotificationService {
 
 
         notifications.forEach((Notifi n)
-                -> notificationHistories.add(domainNotification2NotificationHistory(n)));
+                -> notificationHistories.add(domainNotification2NotificationHistory(n, uid)));
 
         return notificationHistories;
     }
@@ -134,7 +134,7 @@ public class NotificationService {
      * @param notification
      * @return
      */
-    private NotificationHistory domainNotification2NotificationHistory(Notifi notification) {
+    private NotificationHistory domainNotification2NotificationHistory(Notifi notification, String uid) {
 
         NotificationHistory notificationHistory = new NotificationHistory();
         notificationHistory.setMid(notification.getId());
@@ -142,7 +142,7 @@ public class NotificationService {
         notificationHistory.setTitle(notification.getTitle());
         notificationHistory.setAlert(notification.getAlert());
         notificationHistory.setDatetime(notification.getDatetime());
-        notificationHistory.setUid(notification.getUid());
+        notificationHistory.setUid(uid);
         notificationHistory.setStoraged(notification.getStoraged());
         return notificationHistory;
     }
