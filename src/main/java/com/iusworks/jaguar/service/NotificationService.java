@@ -77,9 +77,9 @@ public class NotificationService {
 
         logger.info("Push:{} Device:{}", notification, device);
         if (device.getType() == DeviceType.iOS.getValue()) {
-            apns.push(notification, device.getVouch());
+            apns.push(notification, device);
         } else if (device.getType() == DeviceType.Android.getValue()) {
-            leanCloudPush.push(notification, device.getVouch());
+            leanCloudPush.push(notification, device);
         } else {
             logger.error("Error Device Type:{}", device.getType());
         }
@@ -163,7 +163,7 @@ public class NotificationService {
 
             List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId(), DeviceType.iOS.getValue());
             for (Device d : ds) {
-                apns.push(notification, d.getVouch());
+                apns.push(notification, d);
             }
         }
 

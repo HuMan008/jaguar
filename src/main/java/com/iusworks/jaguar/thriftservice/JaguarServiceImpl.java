@@ -15,6 +15,7 @@
 package com.iusworks.jaguar.thriftservice;
 
 
+import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.domain.Notifi;
 import com.iusworks.jaguar.service.DeviceService;
 import com.iusworks.jaguar.service.NotificationService;
@@ -40,12 +41,13 @@ public class JaguarServiceImpl implements JaguarService.Iface {
     @Autowired
     private NotificationService notificationService;
 
-    private static final int AppServerGatewaySystemID = 4;
+    @Autowired
+    private PushProperties pushProperties;
 
     @Override
     public boolean device(DeviceRequest deviceRequest) throws JaguarException {
 
-        if (deviceRequest.getSystemId() != AppServerGatewaySystemID) {
+        if (pushProperties.itemBySystemId((int) deviceRequest.getSystemId()) == null) {
             throw new JaguarException(9000, "Unsupported system id");
         }
 
@@ -54,9 +56,10 @@ public class JaguarServiceImpl implements JaguarService.Iface {
 
     @Override
     public boolean push(NotificationRequest notificationRequest) throws JaguarException {
-        if (notificationRequest.getSystemId() != AppServerGatewaySystemID) {
+        if (pushProperties.itemBySystemId((int) notificationRequest.getSystemId()) == null) {
             throw new JaguarException(9000, "Unsupported system id");
         }
+
 
         Notifi notifi = notificationService.persist(notificationRequest);
         logger.info("NotificationRequest:{}", notifi);
@@ -75,6 +78,10 @@ public class JaguarServiceImpl implements JaguarService.Iface {
     @Override
     public List<NotificationHistory> notificationHistory(QueryNotificationRequest queryNotificationRequest) throws JaguarException {
 
+        if (pushProperties.itemBySystemId((int) queryNotificationRequest.getSystemId()) == null) {
+            throw new JaguarException(9000, "Unsupported system id");
+        }
+        
         return notificationService.histories(queryNotificationRequest.getSystemId(), queryNotificationRequest.getUid(),
                 queryNotificationRequest.getStart());
     }

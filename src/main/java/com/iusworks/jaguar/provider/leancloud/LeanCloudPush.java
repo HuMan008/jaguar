@@ -15,7 +15,9 @@
 package com.iusworks.jaguar.provider.leancloud;
 
 
-import com.iusworks.jaguar.config.LeancloudProperties;
+import com.iusworks.jaguar.config.PushProperties;
+import com.iusworks.jaguar.config.push.PushItem;
+import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.tools.AirHttpClient;
 import com.iusworks.jaguar.tools.Hash;
@@ -24,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import javax.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,31 +38,46 @@ public class LeanCloudPush {
     private static Logger logger = LoggerFactory.getLogger(LeanCloudPush.class);
 
     @Autowired
-    private LeancloudProperties leancloudProperties;
+    private PushProperties pushProperties;
 
     private static final String PUSH_URL = "https://leancloud.cn/1.1/push";
 
 
-//    private Map<String, String> addHeaders;
-//
-//    @PostConstruct
-//    void construct() {
-//        addHeaders = new HashedMap();
-//        addHeaders.put("X-LC-Id", leancloudProperties.getAppId());
-//        addHeaders.put("X-LC-Key", leancloudProperties.getAppKey());
-//    }
-
-    private Map<String, String> signHeaders() {
+    private Map<String, String> signHeaders(String appId, String masterKey) {
         long timestamp = Instant.now().toEpochMilli();
-        String sign = Hash.md5(String.format("%d%s", timestamp, leancloudProperties.getMasterKey()));
+        String sign = Hash.md5(String.format("%d%s", timestamp, masterKey));
         sign = String.format("%s,%d,master", sign, timestamp);
         Map<String, String> headers = new HashMap<>();
-        headers.put("X-LC-Id", leancloudProperties.getAppId());
+        headers.put("X-LC-Id", appId);
         headers.put("X-LC-Sign", sign);
         return headers;
     }
 
-    public void push(Notification notification, String installationId) {
+    public void push(Notification notification, Device device) {
+        PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
+        if (pushItem == null) {
+            return;
+        }
+
+        Map<String, Map<String, String>> androids = pushItem.getAndroids();
+        if (androids.size() < 1) {
+            return;
+        }
+        Map<String, String> lc = androids.get("leancloud");
+        if (lc == null) {
+            return;
+        }
+
+        String appId = lc.get("appId");
+        String masterKey = lc.get("masterKey");
+        if (StringUtils.isEmpty(appId) || StringUtils.isEmpty(masterKey)) {
+            return;
+        }
+
+        this.dopush(notification, device.getVouch(), appId, masterKey);
+    }
+
+    public void dopush(Notification notification, String installationId, String appId, String masterKey) {
 
         Map<String, Object> data = new HashedMap();
         if (notification.getCategory() != null) {
@@ -96,9 +113,8 @@ public class LeanCloudPush {
         payload.put("data", data);
         payload.put("where", where);
 
-        String response = AirHttpClient.POSTJSON(PUSH_URL, payload, signHeaders());
+        String response = AirHttpClient.POSTJSON(PUSH_URL, payload, signHeaders(appId, masterKey));
         logger.info("response:{}", response);
     }
-
 
 }
