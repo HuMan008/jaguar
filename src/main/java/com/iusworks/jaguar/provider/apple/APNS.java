@@ -89,10 +89,14 @@ public class APNS {
     private ApnsClient clientWithCertificate(String cer, String password) throws Exception {
         ApnsClientBuilder builder = new ApnsClientBuilder();
         File file = null;
-        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        Resource resource = resolver.getResource(cer);
+
         try {
-            file = resource.getFile();
+            file = new File(cer);
+            if (!file.exists()) {
+                ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+                Resource resource = resolver.getResource(cer);
+                file = resource.getFile();
+            }
         } catch (Exception ex) {
             logger.error("{}", ex);
         }
