@@ -41,6 +41,8 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,18 +67,14 @@ public class APNS {
             }
 
             APNSClientPack pack = new APNSClientPack();
-            try {
-                String cerpath = pushItem.getApns().getCerpath();
-                String cerpass = pushItem.getApns().getCerpass();
 
-                pack.setApnsClientProd(clientWithCertificate(cerpath, cerpass));
+            String cerpath = pushItem.getApns().getCerpath();
+            String cerpass = pushItem.getApns().getCerpass();
 
-                String cerpathdev = cerpath.replace(".p12", "_dev.p12");
-                pack.setApnsClientDev(clientWithCertificate(cerpathdev, cerpass));
+            pack.setApnsClientProd(clientWithCertificate(cerpath, cerpass));
 
-            } catch (Exception ex) {
-                logger.error("{}", ex);
-            }
+            String cerpathdev = cerpath.replace(".p12", "_dev.p12");
+            pack.setApnsClientDev(clientWithCertificate(cerpathdev, cerpass));
 
             if (pack.getApnsClientDev() != null || pack.getApnsClientProd() != null) {
                 apnsClientMaps.put(pushItem.getSystemId(), pack);
@@ -97,8 +95,9 @@ public class APNS {
                 Resource resource = resolver.getResource(cer);
                 file = resource.getFile();
             }
-        } catch (Exception ex) {
-            logger.error("{}", ex);
+        } catch (IOException ex) {
+            logger.error("{}", ex.getMessage());
+            file = null;
         }
 
         if (file == null) {

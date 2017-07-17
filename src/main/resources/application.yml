@@ -1,15 +1,6 @@
 jaguar:
   host: 0.0.0.0
   port: 18090
-  push:
-    apple:
-      certificate: apns.p12
-      password: 123456
-      topic: guotong.GtOilStorage
-    leancloud:
-      appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
-      appKey: 7WsfQY6CM52MhX2BeF9XcOyN
-      masterKey: LlCowinwbCplX4lxc4QCIl26
   pushs:
     - systemId: 4
       apns:

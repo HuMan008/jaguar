@@ -1,15 +1,27 @@
 jaguar:
   host: 0.0.0.0
   port: 18090
-  push:
-    apple:
-      certificate: apns.p12
-      password: 123456
-      topic: guotong.GtOilStorage
-    leancloud:
-      appId: p8MUPXn8A5wSYpTI4zvaSJ5n-gzGzoHsz
-      appKey: gOXYfGjgWSOkiaihTR7HlEKw
-      masterKey: Lirf0V30pnNmvkdvLoaubjmY
+  pushs:
+    - systemId: 4
+      apns:
+        topic: guotong.GtOilStorage
+        cerpath: apns/guotong.p12
+        cerpass: 123456
+      androids:
+        leancloud:
+          appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
+          appKey: 7WsfQY6CM52MhX2BeF9XcOyN
+          masterKey: LlCowinwbCplX4lxc4QCIl26
+    - systemId: 5
+      apns:
+        topic: cn.ccc680.TVModule
+        cerpath: apns/caipiao.p12
+        cerpass: 654321
+      androids:
+        leancloud:
+          appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
+          appKey: VUmTpmQgqT2lcALQcdBbNc1f
+          masterKey: h89SUasqidddXG9nUwmrJ6YB
 
 logging:
   level: debug

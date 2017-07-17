@@ -33,8 +33,6 @@ public class DevRunner implements CommandLineRunner {
 
     private static Logger logger = LoggerFactory.getLogger(DevRunner.class);
 
-    @Autowired
-    private APNS apns;
 
     @Autowired
     private LeanCloudPush leanCloudPush;
@@ -69,7 +67,7 @@ public class DevRunner implements CommandLineRunner {
 
 //        logger.info("{}", notificationService.histories((short) 4, "a", 1));
 
-//        logger.info("{}", pushProperties);
+        logger.info("{}", pushProperties);
     }
 
     private Notification genNotification() {
