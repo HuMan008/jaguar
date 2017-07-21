@@ -30,7 +30,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class LeanCloudPush {
@@ -41,6 +43,15 @@ public class LeanCloudPush {
     private PushProperties pushProperties;
 
     private static final String PUSH_URL = "https://leancloud.cn/1.1/push";
+
+    private static final Set<String> SpecActions = new HashSet<>();
+
+    static {
+        SpecActions.add("notice.balance");
+        SpecActions.add("notice.article");
+        SpecActions.add("notice.point");
+        SpecActions.add("notice.text");
+    }
 
 
     private Map<String, String> signHeaders(String appId, String masterKey) {
@@ -70,14 +81,15 @@ public class LeanCloudPush {
 
         String appId = lc.get("appId");
         String masterKey = lc.get("masterKey");
-        if (StringUtils.isEmpty(appId) || StringUtils.isEmpty(masterKey)) {
+        String appAction = lc.get("action");
+        if (StringUtils.isEmpty(appId) || StringUtils.isEmpty(masterKey) || StringUtils.isEmpty(appAction)) {
             return;
         }
 
-        this.dopush(notification, device.getVouch(), appId, masterKey);
+        this.dopush(notification, device.getVouch(), appId, masterKey, appAction);
     }
 
-    public void dopush(Notification notification, String installationId, String appId, String masterKey) {
+    public void dopush(Notification notification, String installationId, String appId, String masterKey, String appAction) {
 
         Map<String, Object> data = new HashedMap();
         if (notification.getCategory() != null) {
@@ -88,19 +100,33 @@ public class LeanCloudPush {
             data.put("title", notification.getTitle());
         }
 
-        if (notification.getAction() != null) {
-            data.put("action", notification.getAction());
-        }
 
-        if (notification.getExtSize() > 0) {
-            data.put("ext", notification.getExt());
-        }
+        {  // Action 放入ext中，除了之前的几种定义好的。 最外层的Action使用AppAction
+
+            Map<String, String> ext = notification.getExt();
+            if (ext == null) {
+                ext = new HashMap<>();
+            }
+
+            if (notification.getAction() != null) {
+                ext.put("action", notification.getAction());
+            }
+
+            data.put("action", appAction);
+
+            if (notification.getAction() != null) {
+                if (SpecActions.contains(notification.getAction())) {
+                    data.put("action", notification.getAction());
+                }
+            }
+
+            data.put("ext", ext);
+        } //end
 
 
         if (notification.getSound() != null) {
             data.put("sound", notification.getSound());
         }
-
 
         data.put("silent", true);
         data.put("alert", notification.getAlert());
