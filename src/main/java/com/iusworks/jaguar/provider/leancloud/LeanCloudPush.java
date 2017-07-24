@@ -21,6 +21,7 @@ import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.tools.AirHttpClient;
 import com.iusworks.jaguar.tools.Hash;
+import com.mashape.unirest.http.Unirest;
 import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ public class LeanCloudPush {
         Map<String, String> headers = new HashMap<>();
         headers.put("X-LC-Id", appId);
         headers.put("X-LC-Sign", sign);
+        headers.put("Content-Type","application/json");
         return headers;
     }
 
@@ -139,8 +141,15 @@ public class LeanCloudPush {
         payload.put("data", data);
         payload.put("where", where);
 
-        String response = AirHttpClient.POSTJSON(PUSH_URL, payload, signHeaders(appId, masterKey));
-        logger.info("response:{}", response);
+
+        //String response = AirHttpClient.POSTJSON(PUSH_URL, payload, signHeaders(appId, masterKey));
+        try {
+            String response = Unirest.post(PUSH_URL).headers(signHeaders(appId, masterKey)).body(payload).asString().getBody();
+            logger.info("response:{}", response);
+        } catch (Exception ex) {
+            logger.error("{}", ex);
+        }
+
     }
 
 }
