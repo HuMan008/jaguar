@@ -62,7 +62,7 @@ public class LeanCloudPush {
         Map<String, String> headers = new HashMap<>();
         headers.put("X-LC-Id", appId);
         headers.put("X-LC-Sign", sign);
-        headers.put("Content-Type","application/json");
+        headers.put("Content-Type", "application/json");
         return headers;
     }
 
@@ -143,6 +143,7 @@ public class LeanCloudPush {
 
 
         //String response = AirHttpClient.POSTJSON(PUSH_URL, payload, signHeaders(appId, masterKey));
+        logger.info("LC=========={}", payload);
         try {
             String response = Unirest.post(PUSH_URL).headers(signHeaders(appId, masterKey)).body(payload).asString().getBody();
             logger.info("response:{}", response);
