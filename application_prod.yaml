@@ -9,9 +9,10 @@ jaguar:
         cerpass: 123456
       androids:
         leancloud:
-          appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
-          appKey: 7WsfQY6CM52MhX2BeF9XcOyN
-          masterKey: LlCowinwbCplX4lxc4QCIl26
+          action: com.gt.app.gtecard.PUSH_RECEIVER
+          appId: p8MUPXn8A5wSYpTI4zvaSJ5n-gzGzoHsz
+          appKey: gOXYfGjgWSOkiaihTR7HlEKw
+          masterKey: Lirf0V30pnNmvkdvLoaubjmY
     - systemId: 5
       apns:
         topic: cn.ccc680.TVModule
@@ -19,6 +20,7 @@ jaguar:
         cerpass: 654321
       androids:
         leancloud:
+          action: com.ccc680.lottery.PUSH_RECEIVER
           appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
           appKey: VUmTpmQgqT2lcALQcdBbNc1f
           masterKey: h89SUasqidddXG9nUwmrJ6YB

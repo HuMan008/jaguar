@@ -69,15 +69,18 @@ public class LeanCloudPush {
     public void push(Notification notification, Device device) {
         PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
         if (pushItem == null) {
+            logger.error("PushItem for systemId:{} not found", device.getSid());
             return;
         }
 
         Map<String, Map<String, String>> androids = pushItem.getAndroids();
         if (androids.size() < 1) {
+            logger.error("PushItem for android configure not found");
             return;
         }
         Map<String, String> lc = androids.get("leancloud");
         if (lc == null) {
+            logger.error("PushItem for android -> leancloud not found");
             return;
         }
 
@@ -85,6 +88,7 @@ public class LeanCloudPush {
         String masterKey = lc.get("masterKey");
         String appAction = lc.get("action");
         if (StringUtils.isEmpty(appId) || StringUtils.isEmpty(masterKey) || StringUtils.isEmpty(appAction)) {
+            logger.error("PushItem for android -> leancloud empty appId or masterKey or appAction");
             return;
         }
 

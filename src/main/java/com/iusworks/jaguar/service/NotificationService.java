@@ -56,7 +56,7 @@ public class NotificationService {
     private NotificationDAO notificationDAO;
 
     private ExecutorService executorService = Executors.newCachedThreadPool();
-    
+
 
     /**
      * @param notificationRequest
@@ -160,7 +160,9 @@ public class NotificationService {
         @Override
         public void run() {
             Notification notification = notificationRequest.getNotification();
-            leanCloudPush.push(notification, null);
+            Device device = new Device();
+            device.setSid(notificationRequest.getSystemId());
+            leanCloudPush.push(notification, device);
 
             List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId(), DeviceType.iOS.getValue());
             for (Device d : ds) {
