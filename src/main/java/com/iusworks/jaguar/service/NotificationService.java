@@ -121,6 +121,14 @@ public class NotificationService {
      * @return
      */
     public List<NotificationHistory> histories(Short systemId, String uid, Integer startTime) {
+
+        if (startTime < 1) {
+            Device device = deviceDAO.fetchBySystemIdAndUid(systemId, uid);
+            if (device != null) {
+                startTime = new ObjectId(device.getId()).getTimestamp();
+            }
+        }
+
         List<NotificationHistory> notificationHistories = new ArrayList<>();
         List<Notifi> notifications = notificationDAO.histories(systemId, uid, startTime);
 

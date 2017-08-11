@@ -27,6 +27,7 @@ import java.util.List;
 public class NotificationDAO extends GenericMongoDAO<Notifi> {
 
     public List<Notifi> histories(Short systemId, String uid, Integer start) {
+
         Criteria criteria = Criteria.where("sid").is(systemId).and("uid").in(uid, null).and("datetime").gt(start);
         Query query = Query.query(criteria);
         return mongoTemplate.find(query, Notifi.class);
