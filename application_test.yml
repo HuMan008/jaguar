@@ -9,6 +9,7 @@ jaguar:
         cerpass: 123456
       androids:
         leancloud:
+          action: com.gt.app.gtecard.PUSH_RECEIVER
           appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
           appKey: 7WsfQY6CM52MhX2BeF9XcOyN
           masterKey: LlCowinwbCplX4lxc4QCIl26
@@ -19,6 +20,7 @@ jaguar:
         cerpass: 654321
       androids:
         leancloud:
+          action: com.ccc680.lottery.PUSH_RECEIVER
           appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
           appKey: VUmTpmQgqT2lcALQcdBbNc1f
           masterKey: h89SUasqidddXG9nUwmrJ6YB
