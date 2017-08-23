@@ -15,7 +15,9 @@
 package com.iusworks.jaguar.provider.apple;
 
 
-import com.iusworks.jaguar.config.ApnsProperties;
+import com.iusworks.jaguar.config.PushProperties;
+import com.iusworks.jaguar.config.push.PushItem;
+import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
 import com.relayrides.pushy.apns.ApnsClient;
@@ -34,10 +36,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Component
@@ -45,82 +51,160 @@ public class APNS {
 
     private static Logger logger = LoggerFactory.getLogger(APNS.class);
 
-    private static EventLoopGroup prodEventLoopGroup = new NioEventLoopGroup(16);
-    private static EventLoopGroup devEventLoopGroup = new NioEventLoopGroup();
+    private static EventLoopGroup pushEventLoopGroup = new NioEventLoopGroup(32);
 
-    private ApnsClient apnsClientProd;
-    private ApnsClient apnsClientDev;
+    private Map<Integer, APNSClientPack> apnsClientMaps = new HashMap<>();
 
     @Autowired
-    private ApnsProperties apnsProperties;
+    private PushProperties pushProperties;
 
     @PostConstruct
     void construct() throws Exception {
-        ApnsClientBuilder builder = new ApnsClientBuilder();
+        for (PushItem pushItem : pushProperties.getPushs()) {
+            if (pushItem.getApns() == null) {
+                return;
+            }
 
-        File file;
-        try {
-            file = new File(apnsProperties.getCertificate());
-            builder.setClientCredentials(file, apnsProperties.getPassword());
-        } catch (Exception ex) {
-            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource resource = resolver.getResource(apnsProperties.getCertificate());
-            file = resource.getFile();
-            builder.setClientCredentials(file, apnsProperties.getPassword());
+            APNSClientPack pack = new APNSClientPack();
+
+            String cerpath = pushItem.getApns().getCerpath();
+            String cerpass = pushItem.getApns().getCerpass();
+
+            pack.setApnsClientProd(clientWithCertificate(cerpath, cerpass));
+
+            String cerpathdev = cerpath.replace(".p12", "_dev.p12");
+            pack.setApnsClientDev(clientWithCertificate(cerpathdev, cerpass));
+
+            if (pack.getApnsClientDev() != null || pack.getApnsClientProd() != null) {
+                apnsClientMaps.put(pushItem.getSystemId(), pack);
+            }
         }
-
-        apnsClientProd = builder.setEventLoopGroup(prodEventLoopGroup).build();
-        apnsClientDev = builder.setEventLoopGroup(devEventLoopGroup).build();
 
         reConnectToApns();
     }
 
-    @PreDestroy
-    void destruct() throws Exception {
-        if (apnsClientProd.isConnected()) {
-            apnsClientProd.disconnect();
+    private ApnsClient clientWithCertificate(String cer, String password) throws Exception {
+        ApnsClientBuilder builder = new ApnsClientBuilder();
+        File file = null;
+
+        try {
+            file = new File(cer);
+            if (!file.exists()) {
+                ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+                Resource resource = resolver.getResource(cer);
+                file = resource.getFile();
+            }
+        } catch (IOException ex) {
+            logger.error("{}", ex.getMessage());
+            file = null;
         }
 
-        if (apnsClientDev.isConnected()) {
-            apnsClientDev.disconnect();
+        if (file == null) {
+            logger.error("Certificate:{} not found", cer);
+            return null;
+        }
+
+        builder.setClientCredentials(file, password);
+
+        return builder.setEventLoopGroup(pushEventLoopGroup).build();
+    }
+
+
+    @PreDestroy
+    void destruct() throws Exception {
+
+        for (APNSClientPack pack : apnsClientMaps.values()) {
+            ApnsClient clientProd = pack.getApnsClientProd();
+            if (clientProd != null && clientProd.isConnected()) {
+                clientProd.disconnect();
+            }
+
+            ApnsClient clientDev = pack.getApnsClientDev();
+            if (clientDev != null && clientDev.isConnected()) {
+                clientDev.disconnect();
+            }
         }
     }
 
     private void reConnectToApns() throws Exception {
-        if (apnsClientProd.isConnected()) {
-            apnsClientProd.disconnect().await();
-        }
+        for (APNSClientPack pack : apnsClientMaps.values()) {
+            ApnsClient clientProd = pack.getApnsClientProd();
 
-        if (apnsClientDev.isConnected()) {
-            apnsClientDev.disconnect().await();
-        }
+            if (clientProd != null && clientProd.isConnected()) {
+                clientProd.disconnect().await();
+            }
 
-        Future<Void> futureProd = apnsClientProd.connect(ApnsClient.PRODUCTION_APNS_HOST);
-        Future<Void> futureDev = apnsClientDev.connect(ApnsClient.DEVELOPMENT_APNS_HOST);
+            ApnsClient clientDev = pack.getApnsClientDev();
+            if (clientDev != null && clientDev.isConnected()) {
+                clientDev.disconnect().await();
+            }
 
-        try {
-            futureProd.await();
-            futureDev.await();
-        } catch (InterruptedException ex) {
-            logger.error("{}", ex);
+            Future<Void> futureProd = null;
+            if (clientProd != null) {
+                futureProd = clientProd.connect(ApnsClient.PRODUCTION_APNS_HOST);
+            }
+
+            Future<Void> futureDev = null;
+            if (clientDev != null) {
+                futureDev = clientDev.connect(ApnsClient.DEVELOPMENT_APNS_HOST);
+            }
+
+            try {
+                if (futureProd != null) {
+                    futureProd.await();
+                }
+                if (futureDev != null) {
+                    futureDev.await();
+                }
+            } catch (InterruptedException ex) {
+                logger.error("{}", ex);
+            }
         }
     }
 
-    public void push(Notification notification, String token) {
+    public void push(Notification notification, Device device) {
+        PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
+        if (pushItem == null) {
+            return;
+        }
+
+        APNSClientPack clientPairs = apnsClientMaps.get((int) device.getSid());
+        if (clientPairs == null) {
+            return;
+        }
+
+        ApnsClient client = null;
+        if (notification.getEnv() == Environment.Dev) {
+            client = clientPairs.getApnsClientDev();
+        } else if (notification.getEnv() == Environment.Prod || notification.getEnv() == null) {
+            client = clientPairs.getApnsClientProd();
+        }
+
+        if (client == null) {
+            logger.info("Can not found env:{} for apns", notification.getEnv());
+            return;
+        }
+
+        dopush(notification, device.getVouch(), pushItem.getApns().getTopic(), client);
+    }
+
+    public void dopush(Notification notification, String token, String topic, ApnsClient apnsClient) {
         ApnsPayloadBuilder apnsPayloadBuilder = new ApnsPayloadBuilder();
         apnsPayloadBuilder.setAlertBody(notification.getAlert());
-        apnsPayloadBuilder.setAlertTitle(notification.getTitle());
+        if (!StringUtils.isEmpty(notification.getTitle())) {
+            apnsPayloadBuilder.setAlertTitle(notification.getTitle());
+        }
         apnsPayloadBuilder.setBadgeNumber(notification.getBadge());
 
-        if (notification.getCategory() != null) {
+        if (!StringUtils.isEmpty(notification.getCategory())) {
             apnsPayloadBuilder.setCategoryName(notification.getCategory());
         }
 
-        if (notification.getSound() != null) {
+        if (!StringUtils.isEmpty(notification.getSound())) {
             apnsPayloadBuilder.setSoundFileName(notification.getSound());
         }
 
-        if (notification.getAction() != null) {
+        if (!StringUtils.isEmpty(notification.getAction())) {
             apnsPayloadBuilder.addCustomProperty("action", notification.getAction());
         }
 
@@ -129,15 +213,8 @@ public class APNS {
         }
 
         String payload = apnsPayloadBuilder.buildWithDefaultMaximumLength();
-        SimpleApnsPushNotification apnsPushNotification = new SimpleApnsPushNotification(token, apnsProperties.getTopic(),
+        SimpleApnsPushNotification apnsPushNotification = new SimpleApnsPushNotification(token, topic,
                 payload);
-
-        ApnsClient apnsClient;
-        if (notification.getEnv() != null && notification.getEnv() == Environment.Dev) {
-            apnsClient = apnsClientDev;
-        } else {
-            apnsClient = apnsClientProd;
-        }
 
         try {
             Future<PushNotificationResponse<SimpleApnsPushNotification>> sendNotificationFuture = apnsClient.sendNotification(apnsPushNotification);
@@ -166,6 +243,30 @@ public class APNS {
                     logger.error("{}", iex);
                 }
             }
+        }
+    }
+
+
+    class APNSClientPack {
+
+        private ApnsClient apnsClientProd;
+
+        private ApnsClient apnsClientDev;
+
+        public ApnsClient getApnsClientProd() {
+            return apnsClientProd;
+        }
+
+        public void setApnsClientProd(ApnsClient apnsClientProd) {
+            this.apnsClientProd = apnsClientProd;
+        }
+
+        public ApnsClient getApnsClientDev() {
+            return apnsClientDev;
+        }
+
+        public void setApnsClientDev(ApnsClient apnsClientDev) {
+            this.apnsClientDev = apnsClientDev;
         }
     }
 }

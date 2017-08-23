@@ -11,18 +11,17 @@
  * LastModified: 9/24/16 11:46 PM
  *
  */
-/*
+
 
 package com.iusworks.jaguar;
 
+import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.dao.NotificationDAO;
 import com.iusworks.jaguar.provider.apple.APNS;
 import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
 import com.iusworks.jaguar.service.NotificationService;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
-import com.iusworks.jaguar.thrift.NotificationRequest;
-import com.relayrides.pushy.apns.util.TokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +33,6 @@ public class DevRunner implements CommandLineRunner {
 
     private static Logger logger = LoggerFactory.getLogger(DevRunner.class);
 
-    @Autowired
-    private APNS apns;
 
     @Autowired
     private LeanCloudPush leanCloudPush;
@@ -46,6 +43,9 @@ public class DevRunner implements CommandLineRunner {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private PushProperties pushProperties;
 
     @Override
     public void run(String... args) throws Exception {
@@ -65,7 +65,9 @@ public class DevRunner implements CommandLineRunner {
 //        notification.setStoraged("devtest");
 //        notificationDAO.insert(notification);
 
-        notificationService.histories((short)4, "a", 1);
+//        logger.info("{}", notificationService.histories((short) 4, "a", 1));
+
+        logger.info("{}", pushProperties);
     }
 
     private Notification genNotification() {
@@ -80,6 +82,7 @@ public class DevRunner implements CommandLineRunner {
         return notification;
     }
 
+    /*
     private void noti_ios() {
         Notification notification = genNotification();
         String token = TokenUtil.sanitizeTokenString("<9eb026b3 7d7f6a30 8f74d1eb ec02f572 3045e99e b522f2e3 0caabbfc 288a728a>");
@@ -92,7 +95,7 @@ public class DevRunner implements CommandLineRunner {
         Notification notification = genNotification();
         leanCloudPush.push(notification, "12345678-4312-1234-1234-1234567890ab");
     }
-
-}
 */
+}
+
 
