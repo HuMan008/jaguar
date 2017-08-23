@@ -85,4 +85,9 @@ public class JaguarServiceImpl implements JaguarService.Iface {
         return notificationService.histories(queryNotificationRequest.getSystemId(), queryNotificationRequest.getUid(),
                 queryNotificationRequest.getStart());
     }
+
+    @Override
+    public boolean notificationReport(NotificationReportRequest notificationReportRequest) throws JaguarException, TException {
+        return false;
+    }
 }

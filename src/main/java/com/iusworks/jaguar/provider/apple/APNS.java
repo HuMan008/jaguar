@@ -18,6 +18,7 @@ package com.iusworks.jaguar.provider.apple;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.domain.DeviceState;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
 import com.relayrides.pushy.apns.ApnsClient;
@@ -163,6 +164,11 @@ public class APNS {
     }
 
     public void push(Notification notification, Device device) {
+        if (device.getState().byteValue() != DeviceState.Normal.getValue().byteValue()) {
+            return;
+        }
+
+
         PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
         if (pushItem == null) {
             return;

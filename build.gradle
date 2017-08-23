@@ -44,7 +44,7 @@ dependencies {
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
-    compile group: 'org.apache.thrift', name: 'libthrift', version: '0.9.3'
+    compile group: 'org.apache.thrift', name: 'libthrift', version: '0.10.0'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2'
     compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
     compile group: 'com.relayrides', name: 'pushy', version: '0.8.1'

@@ -71,8 +71,13 @@ public class NotificationService {
 
         Notification notification = notificationRequest.getNotification();
         Device device = deviceDAO.fetchBySystemIdAndUid(notificationRequest.getSystemId(), notification.getUid());
-        if (device == null || device.getState().byteValue() != DeviceState.Normal.getValue().byteValue()) {
-            logger.error("Device error:{}", device);
+        if (device == null) {
+            logger.error("Device Not found with systemid:{} uid:{}", notificationRequest.getSystemId(), notification.getUid());
+            return;
+        }
+
+        if (device.getState().byteValue() != DeviceState.Normal.getValue().byteValue()) {
+            logger.error("Device is unused:{}", device);
             return;
         }
 
@@ -124,7 +129,9 @@ public class NotificationService {
 
         if (startTime < 1) {
             Device device = deviceDAO.fetchBySystemIdAndUid(systemId, uid);
-            if (device != null) {
+            if (device == null) {
+                startTime = (int) Instant.now().getEpochSecond();
+            } else {
                 startTime = new ObjectId(device.getId()).getTimestamp();
             }
         }
