@@ -165,11 +165,13 @@ public class APNS {
     public void push(Notification notification, Device device) {
         PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
         if (pushItem == null) {
+            logger.error("PushItem is null for device:{}", device);
             return;
         }
 
         APNSClientPack clientPairs = apnsClientMaps.get((int) device.getSid());
         if (clientPairs == null) {
+            logger.error("APNSClientPack not found for:{}", device);
             return;
         }
 
@@ -225,6 +227,11 @@ public class APNS {
                     logger.error("Notifi rejected by the APNs gateway: {} \t and the token is invalid as of {}",
                             pushNotificationResponse.getRejectionReason(),
                             pushNotificationResponse.getTokenInvalidationTimestamp());
+
+                    if (pushNotificationResponse.getRejectionReason().equals("")) {
+                        // 处理错误Token
+                    }
+
                 } else {
                     logger.error("Notifi rejected by the APNs gateway: {}", pushNotificationResponse.getRejectionReason());
                 }
