@@ -19,7 +19,6 @@ import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.thrift.Notification;
-import com.iusworks.jaguar.tools.AirHttpClient;
 import com.iusworks.jaguar.tools.Hash;
 import com.mashape.unirest.http.Unirest;
 import org.apache.commons.collections.map.HashedMap;

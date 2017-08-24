@@ -15,6 +15,7 @@
 package com.iusworks.jaguar.provider.apple;
 
 
+import com.iusworks.jaguar.AppleTokenDiscarder;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
@@ -171,11 +172,13 @@ public class APNS {
 
         PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
         if (pushItem == null) {
+            logger.error("PushItem is null for device:{}", device);
             return;
         }
 
         APNSClientPack clientPairs = apnsClientMaps.get((int) device.getSid());
         if (clientPairs == null) {
+            logger.error("APNSClientPack not found for:{}", device);
             return;
         }
 
@@ -191,10 +194,15 @@ public class APNS {
             return;
         }
 
-        dopush(notification, device.getVouch(), pushItem.getApns().getTopic(), client);
+        dopush(notification, device, pushItem.getApns().getTopic(), client);
     }
 
-    public void dopush(Notification notification, String token, String topic, ApnsClient apnsClient) {
+    public void dopush(Notification notification, Device device, String topic, ApnsClient apnsClient) {
+        String token = device.getVouch();
+        if (StringUtils.isEmpty(token)) {
+            return;
+        }
+
         ApnsPayloadBuilder apnsPayloadBuilder = new ApnsPayloadBuilder();
         apnsPayloadBuilder.setAlertBody(notification.getAlert());
         if (!StringUtils.isEmpty(notification.getTitle())) {
@@ -231,6 +239,11 @@ public class APNS {
                     logger.error("Notifi rejected by the APNs gateway: {} \t and the token is invalid as of {}",
                             pushNotificationResponse.getRejectionReason(),
                             pushNotificationResponse.getTokenInvalidationTimestamp());
+
+
+                    // 处理错误Token
+//                    AppleTokenDiscarder.appendDiscardQueue(device.getId(), token);
+
                 } else {
                     logger.error("Notifi rejected by the APNs gateway: {}", pushNotificationResponse.getRejectionReason());
                 }
