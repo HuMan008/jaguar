@@ -124,7 +124,7 @@ public class NotificationService {
 
         if (startTime < 1) {
             Device device = deviceDAO.fetchBySystemIdAndUid(systemId, uid);
-            if (device != null) {
+            if (device == null) {
                 startTime = new ObjectId(device.getId()).getTimestamp();
             }
         }
