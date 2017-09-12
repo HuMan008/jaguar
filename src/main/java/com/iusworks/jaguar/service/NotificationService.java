@@ -26,6 +26,7 @@ import com.iusworks.jaguar.thrift.DeviceType;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.thrift.NotificationHistory;
 import com.iusworks.jaguar.thrift.NotificationRequest;
+import org.apache.thrift.transport.TTransportException;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,5 +186,13 @@ public class NotificationService {
             }
         }
 
+    }
+
+    public static void main(String[] args) {
+        int now = (int) Instant.now().getEpochSecond();
+        String id = new ObjectId().toHexString();
+        int now2 = (new ObjectId(id)).getTimestamp();
+
+        logger.info("{} {}", now, now2);
     }
 }
