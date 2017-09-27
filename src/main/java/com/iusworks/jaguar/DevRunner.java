@@ -15,59 +15,110 @@
 
 package com.iusworks.jaguar;
 
-import com.iusworks.jaguar.config.PushProperties;
-import com.iusworks.jaguar.dao.NotificationDAO;
-import com.iusworks.jaguar.provider.apple.APNS;
-import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
-import com.iusworks.jaguar.service.NotificationService;
-import com.iusworks.jaguar.thrift.Environment;
-import com.iusworks.jaguar.thrift.Notification;
+import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
+import com.iusworks.jaguar.thrift.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+
 @Component
-public class DevRunner implements CommandLineRunner {
+public class DevRunner {
 
     private static Logger logger = LoggerFactory.getLogger(DevRunner.class);
 
+//    @Autowired
+//    private LeanCloudPush leanCloudPush;
+//
+//    @Autowired
+//    private NotificationDAO notificationDAO;
+//
+//    @Autowired
+//    private NotificationService notificationService;
+//
+//    @Autowired
+//    private PushProperties pushProperties;
 
     @Autowired
-    private LeanCloudPush leanCloudPush;
-
-
-    @Autowired
-    private NotificationDAO notificationDAO;
+    private DirectClient directClient;
 
     @Autowired
-    private NotificationService notificationService;
+    private MiPush miPush;
 
-    @Autowired
-    private PushProperties pushProperties;
+    @Scheduled(initialDelay = 1000, fixedRate = 1000000)
+    public void testMi() {
 
-    @Override
-    public void run(String... args) throws Exception {
-//        if (true) {
-//            noti_ios();
-//        }
-//        noti_android();
+        Notification notification = new Notification();
+        notification.setAction("abc");
+        notification.setAlert("测试alert");
+        notification.setTitle("测试title");
+        notification.setStoraged("......");
 
-//        Notifi notification = new Notifi();
-//        notification.setId((new ObjectId()).toHexString());
-//        notification.setSid((short)999);
-//        notification.setUid("test");
-//        notification.setAction("test");
-//        notification.setTitle("test");
-//        notification.setAlert("devtest");
-//        notification.setDatetime((int) Instant.now().getEpochSecond());
-//        notification.setStoraged("devtest");
-//        notificationDAO.insert(notification);
 
-//        logger.info("{}", notificationService.histories((short) 4, "a", 1));
+        com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
+        device.setSid((short) 5);
 
-        logger.info("{}", pushProperties);
+        miPush.push(notification, device, null);
+
+    }
+
+    public void testDeviceRegiste() {
+
+        DeviceRequest deviceRequest = new DeviceRequest();
+        deviceRequest.setSystemId((short) 4);
+        deviceRequest.setSignature("");
+
+        Device device = new Device();
+        device.setUid("systemUid");
+        device.setDeviceId("deviceId");
+        device.setType(DeviceType.iOS);
+
+        HashSet<String> cares = new HashSet<>();
+        cares.add("girl");
+        cares.add("ps4 pro");
+        cares.add("game");
+        device.setCares(cares);
+
+        DevicePlatformVoucher ios = new DevicePlatformVoucher();
+        ios.setVoucher("ios token");
+        ios.setState((short) 0);
+        ios.setPlatform("ios");
+        device.addToDpv(ios);
+
+        device.addToTags("oil");
+        device.addToTags("red");
+        device.addToTags("blue");
+
+        device.setVoucher("voucher");
+        device.setState((short) 0);
+
+        device.putToDeviceInfo("brand", "xiaomi");
+        device.putToDeviceInfo("osversion", "1.5");
+        device.putToDeviceInfo("name", "卜辞中");
+
+        deviceRequest.setDevice(device);
+        directClient.device(deviceRequest);
+    }
+
+    public void testDeivcePlatformVoucher() {
+        logger.info("testDeivcePlatformVoucher");
+        DevicePlatformVoucherRequest request = new DevicePlatformVoucherRequest();
+        request.setUid("systemUid");
+        request.setSignature("");
+        request.setSystemId((short) 4);
+
+        DevicePlatformVoucher voucher = new DevicePlatformVoucher();
+        voucher.setPlatform("xiaomi");
+        voucher.setState((short) 0);
+        voucher.setVoucher("xiaomi token");
+
+        request.setDpv(voucher);
+
+        directClient.devicePlatformVoucher(request);
     }
 
     private Notification genNotification() {

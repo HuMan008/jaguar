@@ -65,7 +65,7 @@ public class JaguarRunner implements CommandLineRunner {
         serverArgs.maxWorkerThreads(32);
         serverArgs.protocolFactory(TBinaryProtocol::new);
         TServer tServer = new TThreadPoolServer(serverArgs);
-        logger.info("Server started and listen at : {}", socketAddress);
+        logger.info("Jaguar Started, Listen at : {}", socketAddress);
         tServer.serve();
     }
 

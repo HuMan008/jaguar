@@ -24,6 +24,11 @@ jaguar:
           appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
           appKey: VUmTpmQgqT2lcALQcdBbNc1f
           masterKey: h89SUasqidddXG9nUwmrJ6YB
+        xiaomi:
+          appId: 2882303761517620678
+          appKey: 5581762023678
+          appSecret: ZYxFh+YqnbJZHP4RdBXfcw==
+          package: com.ccc680.lottery
 
 logging:
   level: debug
@@ -40,10 +45,9 @@ spring:
       max-wait: -1
   data:
     mongodb:
-      database: Jaguar
+      database: JaguarDev
       host: 201.201.201.174
       port: 27017
-
 
 
 

@@ -20,13 +20,13 @@ import com.iusworks.jaguar.dao.NotificationDAO;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.domain.DeviceState;
 import com.iusworks.jaguar.domain.Notifi;
-import com.iusworks.jaguar.provider.apple.APNS;
-import com.iusworks.jaguar.provider.leancloud.LeanCloudPush;
+import com.iusworks.jaguar.provider.push.Dispatcher;
+import com.iusworks.jaguar.provider.push.apple.ApplePush;
+import com.iusworks.jaguar.provider.push.leancloud.LeanCloudPush;
 import com.iusworks.jaguar.thrift.DeviceType;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.thrift.NotificationHistory;
 import com.iusworks.jaguar.thrift.NotificationRequest;
-import org.apache.thrift.transport.TTransportException;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +45,13 @@ public class NotificationService {
     private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
     @Autowired
-    private APNS apns;
+    private ApplePush apns;
 
     @Autowired
     private LeanCloudPush leanCloudPush;
+
+    @Autowired
+    private Dispatcher dispatcher;
 
     @Autowired
     private DeviceDAO deviceDAO;
@@ -84,9 +87,9 @@ public class NotificationService {
 
         logger.info("Push:{} Device:{}", notification, device);
         if (device.getType() == DeviceType.iOS.getValue()) {
-            apns.push(notification, device);
+            apns.push(notification, device, notifyId);
         } else if (device.getType() == DeviceType.Android.getValue()) {
-            leanCloudPush.push(notification, device);
+            leanCloudPush.push(notification, device, notifyId);
         } else {
             logger.error("Error Device Type:{}", device.getType());
         }
@@ -178,21 +181,25 @@ public class NotificationService {
             Notification notification = notificationRequest.getNotification();
             Device device = new Device();
             device.setSid(notificationRequest.getSystemId());
-            leanCloudPush.push(notification, device);
+            //TODO
+            leanCloudPush.push(notification, device, "");
 
             List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId(), DeviceType.iOS.getValue());
             for (Device d : ds) {
-                apns.push(notification, d);
+
+                //TODO
+                apns.push(notification, d, "");
             }
         }
 
     }
 
-    public static void main(String[] args) {
-        int now = (int) Instant.now().getEpochSecond();
-        String id = new ObjectId().toHexString();
-        int now2 = (new ObjectId(id)).getTimestamp();
 
-        logger.info("{} {}", now, now2);
-    }
+//    public static void main(String[] args) {
+//        int now = (int) Instant.now().getEpochSecond();
+//        String id = new ObjectId().toHexString();
+//        int now2 = (new ObjectId(id)).getTimestamp();
+//
+//        logger.info("{} {}", now, now2);
+//    }
 }

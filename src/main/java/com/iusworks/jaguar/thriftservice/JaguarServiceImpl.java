@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,19 +49,48 @@ public class JaguarServiceImpl implements JaguarService.Iface {
     public boolean device(DeviceRequest deviceRequest) throws JaguarException {
 
         if (pushProperties.itemBySystemId((int) deviceRequest.getSystemId()) == null) {
-            throw new JaguarException(9000, "Unsupported system id");
+            throw JaguarError.jaguarExceptionFromError(JaguarError.UnsupportedSystem);
         }
 
         return deviceService.persistDevice(deviceRequest);
     }
 
     @Override
-    public boolean push(NotificationRequest notificationRequest) throws JaguarException {
-        if (pushProperties.itemBySystemId((int) notificationRequest.getSystemId()) == null) {
-            throw new JaguarException(9000, "Unsupported system id");
+    public boolean devicePlatformVoucher(DevicePlatformVoucherRequest dpvRequest) throws JaguarException, TException {
+        if (pushProperties.itemBySystemId((int) dpvRequest.getSystemId()) == null) {
+            throw JaguarError.jaguarExceptionFromError(JaguarError.UnsupportedSystem);
         }
 
+        return deviceService.updatePlatformVoucher(dpvRequest);
+    }
 
+    @Override
+    public boolean push(NotificationRequest notificationRequest) throws JaguarException {
+        if (pushProperties.itemBySystemId((int) notificationRequest.getSystemId()) == null) {
+            throw JaguarError.jaguarExceptionFromError(JaguarError.UnsupportedSystem);
+        }
+
+        String uid = notificationRequest.getNotification().getUid();
+        if (uid != null && uid.contains(",")) {
+            List<String> uidList = Arrays.asList(uid.split(","));
+            for (String uidOne : uidList) {
+                uidOne = uidOne.trim();
+                if (uidOne.length() < 1) {
+                    continue;
+                }
+
+                NotificationRequest oneRequest = notificationRequest.deepCopy();
+                oneRequest.getNotification().setUid(uidOne);
+                notificationPreRequest(oneRequest);
+            }
+        } else {
+            notificationPreRequest(notificationRequest);
+        }
+
+        return true;
+    }
+
+    private void notificationPreRequest(NotificationRequest notificationRequest) {
         Notifi notifi = notificationService.persist(notificationRequest);
         logger.info("NotificationRequest:{}", notifi);
 
@@ -71,23 +101,48 @@ public class JaguarServiceImpl implements JaguarService.Iface {
         }
         notificationRequest.getNotification().setExt(ext);
         notificationService.notify(notificationRequest, notifi.getId());
-
-        return true;
     }
+
 
     @Override
     public List<NotificationHistory> notificationHistory(QueryNotificationRequest queryNotificationRequest) throws JaguarException {
 
         if (pushProperties.itemBySystemId((int) queryNotificationRequest.getSystemId()) == null) {
-            throw new JaguarException(9000, "Unsupported system id");
+            throw JaguarError.jaguarExceptionFromError(JaguarError.UnsupportedSystem);
         }
-        
+
         return notificationService.histories(queryNotificationRequest.getSystemId(), queryNotificationRequest.getUid(),
                 queryNotificationRequest.getStart());
     }
 
     @Override
-    public boolean notificationReport(NotificationReportRequest notificationReportRequest) throws JaguarException, TException {
+    public boolean notificationReport(NotificationReportRequest notificationReportRequest) throws JaguarException {
         return false;
+    }
+
+
+    private enum JaguarError {
+
+        UnsupportedSystem(9000, "Unsupported System Id");
+
+        private Integer code;
+        private String message;
+
+        JaguarError(Integer code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public static JaguarException jaguarExceptionFromError(JaguarError error) {
+            return new JaguarException(error.getCode(), error.getMessage());
+        }
     }
 }

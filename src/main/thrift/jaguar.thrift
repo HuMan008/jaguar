@@ -20,7 +20,7 @@ struct DevicePlatformVoucher {
 struct Device {
     1: required DeviceType type;
     2: required string uid;
-    3: required string voucher;
+    3: required string voucher;   
     4: optional set<string> tags;
     5: optional set<string> cares;   // 关心推送什么类型的数据
     6: required i16 state;
@@ -28,6 +28,7 @@ struct Device {
     8: optional set<DevicePlatformVoucher> dpv;
     9: optional map<string,string> deviceInfo;
 }
+
 
 struct Notification {
     1: required Environment env;
@@ -59,6 +60,15 @@ struct DeviceRequest {
     4: required Device device;
 }
 
+
+struct DevicePlatformVoucherRequest {
+    1: required i16 systemId;
+    2: required i32 time;
+    3: required string signature;
+    4: required string uid;
+    5: required DevicePlatformVoucher dpv;
+}
+
 struct NotificationRequest {
     1: required i16 systemId;
     2: required i32 time;
@@ -73,7 +83,6 @@ struct QueryNotificationRequest{
     4: required string uid;
     5: required i32 start;
 }
-
 
 struct NotificationReportRequest {
     1: required i16 systemId;
@@ -99,6 +108,7 @@ exception JaguarException {
 
 service JaguarService {
     bool device(1:DeviceRequest deviceRequest) throws (1:JaguarException ex);
+    bool devicePlatformVoucher(1:DevicePlatformVoucherRequest dpvRequest) throws (1:JaguarException ex);
     bool push(1:NotificationRequest notificationRequest) throws (1:JaguarException ex);
     list<NotificationHistory> notificationHistory(1:QueryNotificationRequest queryNotificationRequest) throws (1:JaguarException ex);
     bool notificationReport(1: NotificationReportRequest notificationReportRequest) throws (1:JaguarException ex);

@@ -85,8 +85,7 @@ public class GenericMongoDAO<T> {
                         continue;
                     }
                 }
-
-
+                
                 update.set(name, obj);
 //                logger.debug("update: --- {}   {}", name, obj);
             } catch (Exception ex) {

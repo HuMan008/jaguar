@@ -12,12 +12,13 @@
  *
  */
 
-package com.iusworks.jaguar.provider.leancloud;
+package com.iusworks.jaguar.provider.push.leancloud;
 
 
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.provider.push.Push;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.tools.Hash;
 import com.mashape.unirest.http.Unirest;
@@ -29,13 +30,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
-public class LeanCloudPush {
+public class LeanCloudPush implements Push {
 
     private static Logger logger = LoggerFactory.getLogger(LeanCloudPush.class);
 
@@ -65,22 +63,22 @@ public class LeanCloudPush {
         return headers;
     }
 
-    public void push(Notification notification, Device device) {
+    public boolean push(Notification notification, Device device, String notifyId) {
         PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
         if (pushItem == null) {
             logger.error("PushItem for systemId:{} not found", device.getSid());
-            return;
+            return false;
         }
 
         Map<String, Map<String, String>> androids = pushItem.getAndroids();
         if (androids.size() < 1) {
             logger.error("PushItem for android configure not found");
-            return;
+            return false;
         }
         Map<String, String> lc = androids.get("leancloud");
         if (lc == null) {
             logger.error("PushItem for android -> leancloud not found");
-            return;
+            return false;
         }
 
         String appId = lc.get("appId");
@@ -88,11 +86,13 @@ public class LeanCloudPush {
         String appAction = lc.get("action");
         if (StringUtils.isEmpty(appId) || StringUtils.isEmpty(masterKey) || StringUtils.isEmpty(appAction)) {
             logger.error("PushItem for android -> leancloud empty appId or masterKey or appAction");
-            return;
+            return false;
         }
 
         this.dopush(notification, device.getVouch(), appId, masterKey, appAction);
+        return true;
     }
+
 
     public void dopush(Notification notification, String installationId, String appId, String masterKey, String appAction) {
 

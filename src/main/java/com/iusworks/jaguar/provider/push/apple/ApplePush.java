@@ -12,7 +12,7 @@
  *
  */
 
-package com.iusworks.jaguar.provider.apple;
+package com.iusworks.jaguar.provider.push.apple;
 
 
 import com.iusworks.jaguar.AppleTokenDiscarder;
@@ -20,6 +20,7 @@ import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.domain.DeviceState;
+import com.iusworks.jaguar.provider.push.Push;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
 import com.relayrides.pushy.apns.ApnsClient;
@@ -49,9 +50,9 @@ import java.util.Map;
 
 
 @Component
-public class APNS {
+public class ApplePush implements Push {
 
-    private static Logger logger = LoggerFactory.getLogger(APNS.class);
+    private static Logger logger = LoggerFactory.getLogger(ApplePush.class);
 
     private static EventLoopGroup pushEventLoopGroup = new NioEventLoopGroup(32);
 
@@ -164,22 +165,22 @@ public class APNS {
         }
     }
 
-    public void push(Notification notification, Device device) {
+    public boolean push(Notification notification, Device device, String notifyId) {
         if (device.getState().byteValue() != DeviceState.Normal.getValue().byteValue()) {
-            return;
+            return false;
         }
 
 
         PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
         if (pushItem == null) {
             logger.error("PushItem is null for device:{}", device);
-            return;
+            return false;
         }
 
         APNSClientPack clientPairs = apnsClientMaps.get((int) device.getSid());
         if (clientPairs == null) {
             logger.error("APNSClientPack not found for:{}", device);
-            return;
+            return false;
         }
 
         ApnsClient client = null;
@@ -191,10 +192,11 @@ public class APNS {
 
         if (client == null) {
             logger.info("Can not found env:{} for apns", notification.getEnv());
-            return;
+            return false;
         }
 
         dopush(notification, device, pushItem.getApns().getTopic(), client);
+        return true;
     }
 
     public void dopush(Notification notification, Device device, String topic, ApnsClient apnsClient) {
@@ -239,11 +241,8 @@ public class APNS {
                     logger.error("Notifi rejected by the APNs gateway: {} \t and the token is invalid as of {}",
                             pushNotificationResponse.getRejectionReason(),
                             pushNotificationResponse.getTokenInvalidationTimestamp());
-
-
                     // 处理错误Token
-//                    AppleTokenDiscarder.appendDiscardQueue(device.getId(), token);
-
+                    AppleTokenDiscarder.appendDiscardQueue(device.getId(), token);
                 } else {
                     logger.error("Notifi rejected by the APNs gateway: {}", pushNotificationResponse.getRejectionReason());
                 }

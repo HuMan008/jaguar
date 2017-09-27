@@ -24,20 +24,26 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.io.IOException;
 
+@EnableScheduling
 @SpringBootApplication
-@ComponentScan({"com.iusworks.jaguar",})
+//@ComponentScan({"com.iusworks.jaguar",})
 public class App {
 
     private static ApplicationContext applicationContext;
 
-    private static Logger logger = LoggerFactory.getLogger(App.class);
+//    private static Logger logger = LoggerFactory.getLogger(App.class);
 
 
     public static void main(String[] args) throws TTransportException {
-        
+        configUnirestObjectMapper();
+        applicationContext = SpringApplication.run(App.class, args);
+    }
+
+    private static void configUnirestObjectMapper() {
         Unirest.setObjectMapper(new ObjectMapper() {
             private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
                     = new com.fasterxml.jackson.databind.ObjectMapper();
@@ -61,11 +67,9 @@ public class App {
             }
 
         });
-
-        applicationContext = SpringApplication.run(App.class, args);
-
     }
 
+    @SuppressWarnings("all")
     public static ApplicationContext getApplicationContext() {
         return applicationContext;
     }

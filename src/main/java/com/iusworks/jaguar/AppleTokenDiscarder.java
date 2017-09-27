@@ -48,7 +48,7 @@ public class AppleTokenDiscarder {
 
     @Scheduled(initialDelay = 1000, fixedRate = 10000)
     public void discard() {
-        logger.info("Start AppleTokenDiscarder..");
+        logger.info("Start AppleTokenDiscarder. Size:{}", discardPairConcurrentLinkedQueue.size());
 
         while (!discardPairConcurrentLinkedQueue.isEmpty()) {
             DiscardPair pair = discardPairConcurrentLinkedQueue.peek();
@@ -61,11 +61,9 @@ public class AppleTokenDiscarder {
             }
 
             logger.info("Discard:{}", pair);
-            deviceDAO.discardVoucher(pair.getId(), pair.getToken());
+            deviceDAO.discardAppleVoucher(pair.getId(), pair.getToken());
         }
     }
-
-
 }
 
 
