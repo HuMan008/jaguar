@@ -76,7 +76,8 @@ public class MiPush implements Pushable {
         }
 
 
-        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), isSupport(device.getInfos()));
+        boolean passThrough = !isSupport(device.getInfos());
+        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), passThrough);
         Sender sender = new Sender(mi.get("appSecret"));
 
         try {
@@ -109,7 +110,6 @@ public class MiPush implements Pushable {
         }
 
 
-
         Sender sender = new Sender(mi.get("appSecret"));
 
         try {
@@ -129,12 +129,12 @@ public class MiPush implements Pushable {
                 }
             }
 
-            if (voucherList.size()>0) {
+            if (voucherList.size() > 0) {
                 Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), false);
                 sender.send(message, voucherList, 3);
             }
 
-            if (voucherListForPassThrough.size()>0){
+            if (voucherListForPassThrough.size() > 0) {
                 Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), true);
                 sender.send(message, voucherListForPassThrough, 3);
             }
@@ -191,9 +191,9 @@ public class MiPush implements Pushable {
         builder.payload(PushDataHelper.jsonStringData(notification, appAction));
 
         if (passThrough) {
-            builder.extra(Constants.EXTRA_PARAM_NOTIFY_FOREGROUND, "0");
-        } else {
             builder.passThrough(1);
+        } else {
+            builder.extra(Constants.EXTRA_PARAM_NOTIFY_FOREGROUND, "0");
         }
 
         if (notification.getExtSize() > 0) {
