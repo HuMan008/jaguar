@@ -13,6 +13,11 @@ jaguar:
           appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
           appKey: 7WsfQY6CM52MhX2BeF9XcOyN
           masterKey: LlCowinwbCplX4lxc4QCIl26
+        xiaomi:
+          appId: 2882303761517514162
+          appKey: 5121751475162
+          appSecret: T8LT/267JdxWRgpK7+1QMg==
+          package: com.gt.app.gtecard
     - systemId: 5
       apns:
         topic: cn.ccc680.TVModule

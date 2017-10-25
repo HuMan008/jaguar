@@ -13,6 +13,11 @@ jaguar:
           appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
           appKey: 7WsfQY6CM52MhX2BeF9XcOyN
           masterKey: LlCowinwbCplX4lxc4QCIl26
+        xiaomi:
+          appId: 2882303761517514162
+          appKey: 5121751475162
+          appSecret: T8LT/267JdxWRgpK7+1QMg==
+          package: com.gt.app.gtecard
     - systemId: 5
       apns:
         topic: cn.ccc680.TVModule
@@ -24,6 +29,11 @@ jaguar:
           appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
           appKey: VUmTpmQgqT2lcALQcdBbNc1f
           masterKey: h89SUasqidddXG9nUwmrJ6YB
+        xiaomi:
+          appId: 2882303761517620678
+          appKey: 5581762023678
+          appSecret: ZYxFh+YqnbJZHP4RdBXfcw==
+          package: com.ccc680.lottery
 
 logging:
   level: debug
