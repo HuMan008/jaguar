@@ -53,6 +53,10 @@ public class MiPush implements Pushable {
 
     @Override
     public boolean isSupport(Map<String, String> deviceInfo) {
+        if (deviceInfo == null) {
+            return false;
+        }
+
         String factory = deviceInfo.get("F");
         if (StringUtils.isEmpty(factory)) {
             return false;
@@ -72,7 +76,7 @@ public class MiPush implements Pushable {
         }
 
 
-        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"));
+        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), isSupport(device.getInfos()));
         Sender sender = new Sender(mi.get("appSecret"));
 
         try {
@@ -104,20 +108,37 @@ public class MiPush implements Pushable {
             return;
         }
 
-        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"));
+
+
         Sender sender = new Sender(mi.get("appSecret"));
 
         try {
             List<String> voucherList = new ArrayList<>();
+            List<String> voucherListForPassThrough = new ArrayList<>();
+
             for (Device device : deviceList) {
                 String voucher = xiaomiVoucher(device);
                 if (StringUtils.isEmpty(voucher)) {
                     logger.error("Device:{} for xiaomi voucher not found");
                     continue;
                 }
-                voucherList.add(voucher);
+                if (isSupport(device.getInfos())) {
+                    voucherList.add(voucher);
+                } else {
+                    voucherListForPassThrough.add(voucher);
+                }
             }
-            sender.send(message, voucherList, 3);
+
+            if (voucherList.size()>0) {
+                Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), false);
+                sender.send(message, voucherList, 3);
+            }
+
+            if (voucherListForPassThrough.size()>0){
+                Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), true);
+                sender.send(message, voucherListForPassThrough, 3);
+            }
+
         } catch (Exception ex) {
             logger.error("{}", ex);
         }
@@ -160,7 +181,7 @@ public class MiPush implements Pushable {
     }
 
 
-    private Message buildMessage(Notification notification, String notifyId, String packageName, String appAction) {
+    private Message buildMessage(Notification notification, String notifyId, String packageName, String appAction, boolean passThrough) {
         Message.Builder builder = new Message.Builder();
         builder.payload(notification.getAlert());
         builder.title(notification.getTitle());
@@ -168,6 +189,13 @@ public class MiPush implements Pushable {
         builder.restrictedPackageName(packageName);
         builder.notifyId(notifyId.hashCode());
         builder.payload(PushDataHelper.jsonStringData(notification, appAction));
+
+        if (passThrough) {
+            builder.extra(Constants.EXTRA_PARAM_NOTIFY_FOREGROUND, "0");
+        } else {
+            builder.passThrough(1);
+        }
+
         if (notification.getExtSize() > 0) {
             notification.getExt().forEach((k, v) -> builder.extra(k, v));
         }
