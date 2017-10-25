@@ -52,7 +52,13 @@ public class MiPush implements Pushable {
 
     @Override
     public boolean isSupport(Map<String, String> deviceInfo) {
-        return false;
+        String factory = deviceInfo.get("F");
+        if (StringUtils.isEmpty(factory)) {
+            return false;
+        }
+
+
+        return factory.toLowerCase().contains("xiaomi");
     }
 
     @Override

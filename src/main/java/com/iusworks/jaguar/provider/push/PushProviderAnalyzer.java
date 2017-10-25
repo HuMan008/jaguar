@@ -50,12 +50,17 @@ public class PushProviderAnalyzer {
 
     private List<Pushable> prividers = new ArrayList();
 
+    private List<Pushable> androidProviders = new ArrayList<>();
+
 
     @PostConstruct
     public void construct() {
         prividers.add(applePush);
         prividers.add(miPush);
         prividers.add(leanCloudPush);
+
+        androidProviders.add(miPush);
+        androidProviders.add(leanCloudPush);
     }
 
     public Pushable pusherFromProvider(PushProviderEnum providerEnum) {
@@ -87,11 +92,15 @@ public class PushProviderAnalyzer {
             return getuiPush;
         }
 
-        return leanCloudPush;
+//        return leanCloudPush;
+        return null;
     }
 
     public List<Pushable> getPrividers() {
         return prividers;
     }
 
+    public List<Pushable> getAndroidProviders() {
+        return androidProviders;
+    }
 }

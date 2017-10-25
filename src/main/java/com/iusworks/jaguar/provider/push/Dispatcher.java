@@ -46,6 +46,8 @@ public class Dispatcher {
         Pushable pusher = pusher(device);
         if (pusher != null) {
             pusher.push(notification, device, notifyId);
+        } else {
+            pushProviderAnalyzer.getAndroidProviders().forEach((e) -> e.push(notification, device, notifyId));
         }
     }
 
