@@ -63,10 +63,13 @@ public class Dispatcher {
         }
 
         Map<Integer, List<Device>> providerDispatchListMap = new HashMap<>();
+
+        List<Device> pushAllDevices = new ArrayList<>();
         for (Device device : deviceList) {
             Pushable pusher = pusher(device);
             if (pusher == null) {
-                logger.warn("Can not found pusher for device:{}", device);
+                // push all
+                pushAllDevices.add(device);
                 continue;
             }
 
@@ -89,6 +92,7 @@ public class Dispatcher {
             pushable.batchPush(notification, entry.getValue(), notifyId);
         }
 
+        pushProviderAnalyzer.getAndroidProviders().forEach((e) -> e.batchPush(notification, pushAllDevices, notifyId));
     }
 
 
