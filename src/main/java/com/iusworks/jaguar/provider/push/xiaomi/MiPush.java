@@ -18,7 +18,9 @@ package com.iusworks.jaguar.provider.push.xiaomi;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
-import com.iusworks.jaguar.provider.push.Push;
+import com.iusworks.jaguar.domain.DevicePlatformVoucher;
+import com.iusworks.jaguar.provider.push.PushProviderEnum;
+import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Notification;
 import com.xiaomi.xmpush.server.Constants;
 import com.xiaomi.xmpush.server.Message;
@@ -27,12 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Component
-public class MiPush implements Push {
+public class MiPush implements Pushable {
 
     @Autowired
     private PushProperties pushProperties;
@@ -44,32 +49,31 @@ public class MiPush implements Push {
 
     private static Logger logger = LoggerFactory.getLogger(MiPush.class);
 
+
+    @Override
+    public boolean isSupport(Map<String, String> deviceInfo) {
+        return false;
+    }
+
     @Override
     public boolean push(Notification notification, Device device, String notifyId) {
 
-
-        PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
-        if (pushItem == null) {
-            logger.error("PushItem for systemId:{} not found", device.getSid());
-            return false;
-        }
-
-        Map<String, Map<String, String>> androids = pushItem.getAndroids();
-        if (androids.size() < 1) {
-            logger.error("PushItem for android configure not found");
-            return false;
-        }
-
-        Map<String, String> mi = androids.get("xiaomi");
+        Map<String, String> mi = xiaomi(device.getSid());
         if (mi == null) {
             logger.error("PushItem for android -> xiaomi not found");
             return false;
         }
 
+
         Message message = buildMessage(notification, notifyId, mi.get("package"));
         Sender sender = new Sender(mi.get("appSecret"));
+
         try {
-            sender.send(message, "fIG7ehjGfh5cJ995ABTB3mH8zTHi6JyCrhkjE0z3WMw=", 3);
+            DevicePlatformVoucher dpv = device.getDpv().get(PushProviderEnum.Xiaomi.getDpvKey());
+            if (dpv == null) {
+                logger.error("Device:{} for xiaomi voucher not found");
+            }
+            sender.send(message, dpv.getVoucher(), 3);
         } catch (Exception ex) {
             logger.error("{}", ex);
         }
@@ -77,12 +81,85 @@ public class MiPush implements Push {
         return true;
     }
 
+    @Override
+    public void batchPush(Notification notification, List<Device> deviceList, String notifyId) {
+
+        if (deviceList.size() < 1) {
+            logger.error("empty device list");
+            return;
+        }
+
+        int deviceSid = (int) deviceList.get(0).getSid();
+
+        Map<String, String> mi = xiaomi(deviceSid);
+        if (mi == null) {
+            logger.error("PushItem for android -> xiaomi not found");
+            return;
+        }
+
+        Message message = buildMessage(notification, notifyId, mi.get("package"));
+        Sender sender = new Sender(mi.get("appSecret"));
+
+        try {
+            List<String> voucherList = new ArrayList<>();
+            for (Device device : deviceList) {
+                String voucher = xiaomiVoucher(device);
+                if (StringUtils.isEmpty(voucher)) {
+                    logger.error("Device:{} for xiaomi voucher not found");
+                    continue;
+                }
+                voucherList.add(voucher);
+            }
+            sender.send(message, voucherList, 3);
+        } catch (Exception ex) {
+            logger.error("{}", ex);
+        }
+    }
+
+    private String xiaomiVoucher(Device device) {
+        Map<String, DevicePlatformVoucher> dvmap = device.getDpv();
+        if (dvmap == null) {
+            return null;
+        }
+        DevicePlatformVoucher dpv = dvmap.get(PushProviderEnum.Xiaomi.getDpvKey());
+        if (dpv == null) {
+            return null;
+        }
+
+        return dpv.getVoucher();
+    }
+
+
+    @Override
+    public PushProviderEnum provider() {
+        return PushProviderEnum.Xiaomi;
+    }
+
+
+    private Map<String, String> xiaomi(int deviceSid) {
+        PushItem pushItem = pushProperties.itemBySystemId(deviceSid);
+        if (pushItem == null) {
+            logger.error("PushItem for systemId:{} not found", deviceSid);
+            return null;
+        }
+
+        Map<String, Map<String, String>> androids = pushItem.getAndroids();
+        if (androids.size() < 1) {
+            logger.error("PushItem for android configure not found");
+            return null;
+        }
+
+        return androids.get("xiaomi");
+    }
+
+
     private Message buildMessage(Notification notification, String notifyId, String packageName) {
         Message.Builder builder = new Message.Builder();
         builder.payload(notification.getAlert());
         builder.title(notification.getTitle());
         builder.description(notification.getAlert());
         builder.restrictedPackageName(packageName);
+        builder.notifyId(notifyId.hashCode());
         if (notification.getExtSize() > 0) {
             notification.getExt().forEach((k, v) -> builder.extra(k, v));
         }

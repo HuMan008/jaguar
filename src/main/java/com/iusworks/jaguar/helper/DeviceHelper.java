@@ -60,6 +60,5 @@ public class DeviceHelper {
     public static boolean isHuawei(Device device) {
         return false;
     }
-
-
+    
 }

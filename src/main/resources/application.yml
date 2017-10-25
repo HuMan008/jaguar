@@ -45,7 +45,7 @@ spring:
       max-wait: -1
   data:
     mongodb:
-      database: JaguarDev
+      database: Jaguar
       host: 201.201.201.174
       port: 27017
 

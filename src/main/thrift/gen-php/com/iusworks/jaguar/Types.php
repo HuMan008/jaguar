@@ -1242,6 +1242,178 @@ class DeviceRequest {
 
 }
 
+class DevicePlatformVoucherRequest {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $systemId = null;
+  /**
+   * @var int
+   */
+  public $time = null;
+  /**
+   * @var string
+   */
+  public $signature = null;
+  /**
+   * @var string
+   */
+  public $uid = null;
+  /**
+   * @var \com\iusworks\jaguar\DevicePlatformVoucher
+   */
+  public $dpv = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'systemId',
+          'type' => TType::I16,
+          ),
+        2 => array(
+          'var' => 'time',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'signature',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'uid',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'dpv',
+          'type' => TType::STRUCT,
+          'class' => '\com\iusworks\jaguar\DevicePlatformVoucher',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['systemId'])) {
+        $this->systemId = $vals['systemId'];
+      }
+      if (isset($vals['time'])) {
+        $this->time = $vals['time'];
+      }
+      if (isset($vals['signature'])) {
+        $this->signature = $vals['signature'];
+      }
+      if (isset($vals['uid'])) {
+        $this->uid = $vals['uid'];
+      }
+      if (isset($vals['dpv'])) {
+        $this->dpv = $vals['dpv'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'DevicePlatformVoucherRequest';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I16) {
+            $xfer += $input->readI16($this->systemId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->time);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->signature);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->uid);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRUCT) {
+            $this->dpv = new \com\iusworks\jaguar\DevicePlatformVoucher();
+            $xfer += $this->dpv->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('DevicePlatformVoucherRequest');
+    if ($this->systemId !== null) {
+      $xfer += $output->writeFieldBegin('systemId', TType::I16, 1);
+      $xfer += $output->writeI16($this->systemId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->time !== null) {
+      $xfer += $output->writeFieldBegin('time', TType::I32, 2);
+      $xfer += $output->writeI32($this->time);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->signature !== null) {
+      $xfer += $output->writeFieldBegin('signature', TType::STRING, 3);
+      $xfer += $output->writeString($this->signature);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->uid !== null) {
+      $xfer += $output->writeFieldBegin('uid', TType::STRING, 4);
+      $xfer += $output->writeString($this->uid);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dpv !== null) {
+      if (!is_object($this->dpv)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('dpv', TType::STRUCT, 5);
+      $xfer += $this->dpv->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class NotificationRequest {
   static $_TSPEC;
 

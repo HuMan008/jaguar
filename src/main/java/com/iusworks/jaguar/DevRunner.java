@@ -15,16 +15,18 @@
 
 package com.iusworks.jaguar;
 
+import com.iusworks.jaguar.dao.DeviceDAO;
+import com.iusworks.jaguar.provider.push.Dispatcher;
 import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
 import com.iusworks.jaguar.thrift.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 
 @Component
 public class DevRunner {
@@ -49,7 +51,41 @@ public class DevRunner {
     @Autowired
     private MiPush miPush;
 
-    @Scheduled(initialDelay = 1000, fixedRate = 1000000)
+    @Autowired
+    private DeviceDAO deviceDAO;
+
+    @Autowired
+    private Dispatcher dispatcher;
+
+    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    public void dodododo() {
+        Integer size = 16;
+        String startId = null;
+        Short sid = 4;
+        List<com.iusworks.jaguar.domain.Device> deviceList = deviceDAO.devicesWithPagination(sid, startId, size);
+        Integer count = 0;
+        Notification notification = new Notification();
+        notification.setAction("abc");
+        notification.setAlert("测试alert");
+        notification.setTitle("测试title");
+        notification.setStoraged("......");
+
+        String notifyId = "1233121234567";
+
+        while (deviceList != null && deviceList.size() > 0) {
+            count += deviceList.size();
+            for (com.iusworks.jaguar.domain.Device d : deviceList) {
+                startId = d.getId();
+            }
+            deviceList = deviceDAO.devicesWithPagination(sid, startId, size);
+            logger.error("-----------------Count: {}", count);
+
+            dispatcher.batchPush(notification, deviceList, notifyId);
+        }
+
+
+    }
+
     public void testMi() {
 
         Notification notification = new Notification();
@@ -67,7 +103,6 @@ public class DevRunner {
     }
 
     public void testDeviceRegiste() {
-
         DeviceRequest deviceRequest = new DeviceRequest();
         deviceRequest.setSystemId((short) 4);
         deviceRequest.setSignature("");

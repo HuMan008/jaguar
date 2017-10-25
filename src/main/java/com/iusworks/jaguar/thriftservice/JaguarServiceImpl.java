@@ -56,7 +56,7 @@ public class JaguarServiceImpl implements JaguarService.Iface {
     }
 
     @Override
-    public boolean devicePlatformVoucher(DevicePlatformVoucherRequest dpvRequest) throws JaguarException, TException {
+    public boolean devicePlatformVoucher(DevicePlatformVoucherRequest dpvRequest) throws JaguarException {
         if (pushProperties.itemBySystemId((int) dpvRequest.getSystemId()) == null) {
             throw JaguarError.jaguarExceptionFromError(JaguarError.UnsupportedSystem);
         }
@@ -90,19 +90,12 @@ public class JaguarServiceImpl implements JaguarService.Iface {
         return true;
     }
 
-    private void notificationPreRequest(NotificationRequest notificationRequest) {
-        Notifi notifi = notificationService.persist(notificationRequest);
-        logger.info("NotificationRequest:{}", notifi);
 
-        Map<String, String> ext = new HashMap<>();
-        ext.put("notifyId", notifi.getId());
-        if (notificationRequest.getNotification().getExt() != null) {
-            ext.putAll(notificationRequest.getNotification().getExt());
-        }
-        notificationRequest.getNotification().setExt(ext);
-        notificationService.notify(notificationRequest, notifi.getId());
+
+    @Override
+    public boolean pushReport(NotificationReportRequest reportRequest) throws JaguarException, TException {
+        return false;
     }
-
 
     @Override
     public List<NotificationHistory> notificationHistory(QueryNotificationRequest queryNotificationRequest) throws JaguarException {
@@ -118,6 +111,22 @@ public class JaguarServiceImpl implements JaguarService.Iface {
     @Override
     public boolean notificationReport(NotificationReportRequest notificationReportRequest) throws JaguarException {
         return false;
+    }
+
+
+
+    private void notificationPreRequest(NotificationRequest notificationRequest) {
+        Notifi notifi = notificationService.persist(notificationRequest);
+
+        logger.info("NotificationRequest: {}", notifi);
+
+        Map<String, String> ext = new HashMap<>();
+        ext.put("notifyId", notifi.getId());
+        if (notificationRequest.getNotification().getExt() != null) {
+            ext.putAll(notificationRequest.getNotification().getExt());
+        }
+        notificationRequest.getNotification().setExt(ext);
+        notificationService.notify(notificationRequest, notifi.getId());
     }
 
 

@@ -33,7 +33,6 @@ import java.net.InetSocketAddress;
 @Component
 public class JaguarRunner implements CommandLineRunner {
 
-
     private static Logger logger = LoggerFactory.getLogger(JaguarRunner.class);
 
     @Autowired
@@ -62,7 +61,7 @@ public class JaguarRunner implements CommandLineRunner {
         TServerSocket socket = new TServerSocket(socketAddress);
         TThreadPoolServer.Args serverArgs = new TThreadPoolServer.Args(socket);
         serverArgs.processor(jaguarServiceProcessor);
-        serverArgs.maxWorkerThreads(32);
+        serverArgs.maxWorkerThreads(1024);
         serverArgs.protocolFactory(TBinaryProtocol::new);
         TServer tServer = new TThreadPoolServer(serverArgs);
         logger.info("Jaguar Started, Listen at : {}", socketAddress);

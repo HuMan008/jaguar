@@ -18,7 +18,9 @@ package com.iusworks.jaguar.provider.push.leancloud;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
-import com.iusworks.jaguar.provider.push.Push;
+import com.iusworks.jaguar.domain.DevicePlatformVoucher;
+import com.iusworks.jaguar.provider.push.PushProviderEnum;
+import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.tools.Hash;
 import com.mashape.unirest.http.Unirest;
@@ -33,7 +35,7 @@ import java.time.Instant;
 import java.util.*;
 
 @Component
-public class LeanCloudPush implements Push {
+public class LeanCloudPush implements Pushable {
 
     private static Logger logger = LoggerFactory.getLogger(LeanCloudPush.class);
 
@@ -64,18 +66,8 @@ public class LeanCloudPush implements Push {
     }
 
     public boolean push(Notification notification, Device device, String notifyId) {
-        PushItem pushItem = pushProperties.itemBySystemId((int) device.getSid());
-        if (pushItem == null) {
-            logger.error("PushItem for systemId:{} not found", device.getSid());
-            return false;
-        }
 
-        Map<String, Map<String, String>> androids = pushItem.getAndroids();
-        if (androids.size() < 1) {
-            logger.error("PushItem for android configure not found");
-            return false;
-        }
-        Map<String, String> lc = androids.get("leancloud");
+        Map<String, String> lc = leancloud(device.getSid());
         if (lc == null) {
             logger.error("PushItem for android -> leancloud not found");
             return false;
@@ -89,12 +81,84 @@ public class LeanCloudPush implements Push {
             return false;
         }
 
-        this.dopush(notification, device.getVouch(), appId, masterKey, appAction);
+        String installationId = leancloudToken(device);
+        this.dopush(notification, installationId, appId, masterKey, appAction);
+
+        return true;
+    }
+
+    @Override
+    public void batchPush(Notification notification, List<Device> deviceList, String notifyId) {
+        if (deviceList.size() < 1) {
+            logger.error("Empty device list");
+            return;
+        }
+
+        int systemId = deviceList.get(0).getSid();
+        Map<String, String> lc = leancloud(systemId);
+        if (lc == null) {
+            logger.error("PushItem for android -> leancloud not found");
+            return;
+        }
+
+        String appId = lc.get("appId");
+        String masterKey = lc.get("masterKey");
+        String appAction = lc.get("action");
+        if (StringUtils.isEmpty(appId) || StringUtils.isEmpty(masterKey) || StringUtils.isEmpty(appAction)) {
+            logger.error("PushItem for android -> leancloud empty appId or masterKey or appAction");
+            return;
+        }
+
+        Map<String, Object> where = new HashMap<>();
+        List<String> installationIdList = new ArrayList<>();
+        deviceList.forEach((d) -> installationIdList.add(leancloudToken(d)));
+        where.put("$in", installationIdList);
+        dopush(notification, where, appId, masterKey, appAction);
+    }
+
+    private String leancloudToken(Device device) {
+        String token = device.getVouch();
+        Map<String, DevicePlatformVoucher> dvmap = device.getDpv();
+        if (dvmap == null) {
+            return token;
+        }
+        DevicePlatformVoucher lcDPV = dvmap.get(PushProviderEnum.Leancloud.getDpvKey());
+        if (lcDPV != null && !StringUtils.isEmpty(lcDPV.getVoucher())) {
+            token = lcDPV.getVoucher();
+        }
+
+        return token;
+    }
+
+    @Override
+    public boolean isSupport(Map<String, String> deviceInfo) {
         return true;
     }
 
 
-    public void dopush(Notification notification, String installationId, String appId, String masterKey, String appAction) {
+    @Override
+    public PushProviderEnum provider() {
+        return PushProviderEnum.Leancloud;
+    }
+
+
+    private Map<String, String> leancloud(int systemId) {
+        PushItem pushItem = pushProperties.itemBySystemId(systemId);
+        if (pushItem == null) {
+            logger.error("PushItem for systemId:{} not found", systemId);
+            return null;
+        }
+
+        Map<String, Map<String, String>> androids = pushItem.getAndroids();
+        if (androids.size() < 1) {
+            logger.error("PushItem for android configure not found");
+            return null;
+        }
+        Map<String, String> lc = androids.get("leancloud");
+        return lc;
+    }
+
+    public void dopush(Notification notification, Object installationId, String appId, String masterKey, String appAction) {
 
         Map<String, Object> data = new HashedMap();
         if (notification.getCategory() != null) {
@@ -136,11 +200,11 @@ public class LeanCloudPush implements Push {
         data.put("silent", true);
         data.put("alert", notification.getAlert());
 
-        Map<String, String> where = new HashedMap();
+        Map<String, Object> where = new HashMap<>();
         if (installationId != null) {
             where.put("installationId", installationId);
         }
-        Map<String, Object> payload = new HashedMap();
+        Map<String, Object> payload = new HashMap();
         payload.put("data", data);
         payload.put("where", where);
 
@@ -153,7 +217,6 @@ public class LeanCloudPush implements Push {
         } catch (Exception ex) {
             logger.error("{}", ex);
         }
-
     }
 
 }

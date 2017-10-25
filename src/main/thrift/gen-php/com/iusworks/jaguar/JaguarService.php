@@ -24,11 +24,23 @@ interface JaguarServiceIf {
    */
   public function device(\com\iusworks\jaguar\DeviceRequest $deviceRequest);
   /**
+   * @param \com\iusworks\jaguar\DevicePlatformVoucherRequest $dpvRequest
+   * @return bool
+   * @throws \com\iusworks\jaguar\JaguarException
+   */
+  public function devicePlatformVoucher(\com\iusworks\jaguar\DevicePlatformVoucherRequest $dpvRequest);
+  /**
    * @param \com\iusworks\jaguar\NotificationRequest $notificationRequest
    * @return bool
    * @throws \com\iusworks\jaguar\JaguarException
    */
   public function push(\com\iusworks\jaguar\NotificationRequest $notificationRequest);
+  /**
+   * @param \com\iusworks\jaguar\NotificationReportRequest $reportRequest
+   * @return bool
+   * @throws \com\iusworks\jaguar\JaguarException
+   */
+  public function pushReport(\com\iusworks\jaguar\NotificationReportRequest $reportRequest);
   /**
    * @param \com\iusworks\jaguar\QueryNotificationRequest $queryNotificationRequest
    * @return \com\iusworks\jaguar\NotificationHistory[]
@@ -109,6 +121,60 @@ class JaguarServiceClient implements \com\iusworks\jaguar\JaguarServiceIf {
     throw new \Exception("device failed: unknown result");
   }
 
+  public function devicePlatformVoucher(\com\iusworks\jaguar\DevicePlatformVoucherRequest $dpvRequest)
+  {
+    $this->send_devicePlatformVoucher($dpvRequest);
+    return $this->recv_devicePlatformVoucher();
+  }
+
+  public function send_devicePlatformVoucher(\com\iusworks\jaguar\DevicePlatformVoucherRequest $dpvRequest)
+  {
+    $args = new \com\iusworks\jaguar\JaguarService_devicePlatformVoucher_args();
+    $args->dpvRequest = $dpvRequest;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'devicePlatformVoucher', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('devicePlatformVoucher', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_devicePlatformVoucher()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\com\iusworks\jaguar\JaguarService_devicePlatformVoucher_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \com\iusworks\jaguar\JaguarService_devicePlatformVoucher_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ex !== null) {
+      throw $result->ex;
+    }
+    throw new \Exception("devicePlatformVoucher failed: unknown result");
+  }
+
   public function push(\com\iusworks\jaguar\NotificationRequest $notificationRequest)
   {
     $this->send_push($notificationRequest);
@@ -161,6 +227,60 @@ class JaguarServiceClient implements \com\iusworks\jaguar\JaguarServiceIf {
       throw $result->ex;
     }
     throw new \Exception("push failed: unknown result");
+  }
+
+  public function pushReport(\com\iusworks\jaguar\NotificationReportRequest $reportRequest)
+  {
+    $this->send_pushReport($reportRequest);
+    return $this->recv_pushReport();
+  }
+
+  public function send_pushReport(\com\iusworks\jaguar\NotificationReportRequest $reportRequest)
+  {
+    $args = new \com\iusworks\jaguar\JaguarService_pushReport_args();
+    $args->reportRequest = $reportRequest;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'pushReport', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('pushReport', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_pushReport()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\com\iusworks\jaguar\JaguarService_pushReport_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \com\iusworks\jaguar\JaguarService_pushReport_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ex !== null) {
+      throw $result->ex;
+    }
+    throw new \Exception("pushReport failed: unknown result");
   }
 
   public function notificationHistory(\com\iusworks\jaguar\QueryNotificationRequest $queryNotificationRequest)
@@ -456,6 +576,186 @@ class JaguarService_device_result {
 
 }
 
+class JaguarService_devicePlatformVoucher_args {
+  static $_TSPEC;
+
+  /**
+   * @var \com\iusworks\jaguar\DevicePlatformVoucherRequest
+   */
+  public $dpvRequest = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'dpvRequest',
+          'type' => TType::STRUCT,
+          'class' => '\com\iusworks\jaguar\DevicePlatformVoucherRequest',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['dpvRequest'])) {
+        $this->dpvRequest = $vals['dpvRequest'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'JaguarService_devicePlatformVoucher_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->dpvRequest = new \com\iusworks\jaguar\DevicePlatformVoucherRequest();
+            $xfer += $this->dpvRequest->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('JaguarService_devicePlatformVoucher_args');
+    if ($this->dpvRequest !== null) {
+      if (!is_object($this->dpvRequest)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('dpvRequest', TType::STRUCT, 1);
+      $xfer += $this->dpvRequest->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class JaguarService_devicePlatformVoucher_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \com\iusworks\jaguar\JaguarException
+   */
+  public $ex = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ex',
+          'type' => TType::STRUCT,
+          'class' => '\com\iusworks\jaguar\JaguarException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ex'])) {
+        $this->ex = $vals['ex'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'JaguarService_devicePlatformVoucher_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ex = new \com\iusworks\jaguar\JaguarException();
+            $xfer += $this->ex->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('JaguarService_devicePlatformVoucher_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ex !== null) {
+      $xfer += $output->writeFieldBegin('ex', TType::STRUCT, 1);
+      $xfer += $this->ex->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class JaguarService_push_args {
   static $_TSPEC;
 
@@ -619,6 +919,186 @@ class JaguarService_push_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('JaguarService_push_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ex !== null) {
+      $xfer += $output->writeFieldBegin('ex', TType::STRUCT, 1);
+      $xfer += $this->ex->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class JaguarService_pushReport_args {
+  static $_TSPEC;
+
+  /**
+   * @var \com\iusworks\jaguar\NotificationReportRequest
+   */
+  public $reportRequest = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'reportRequest',
+          'type' => TType::STRUCT,
+          'class' => '\com\iusworks\jaguar\NotificationReportRequest',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['reportRequest'])) {
+        $this->reportRequest = $vals['reportRequest'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'JaguarService_pushReport_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->reportRequest = new \com\iusworks\jaguar\NotificationReportRequest();
+            $xfer += $this->reportRequest->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('JaguarService_pushReport_args');
+    if ($this->reportRequest !== null) {
+      if (!is_object($this->reportRequest)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('reportRequest', TType::STRUCT, 1);
+      $xfer += $this->reportRequest->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class JaguarService_pushReport_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \com\iusworks\jaguar\JaguarException
+   */
+  public $ex = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ex',
+          'type' => TType::STRUCT,
+          'class' => '\com\iusworks\jaguar\JaguarException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ex'])) {
+        $this->ex = $vals['ex'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'JaguarService_pushReport_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ex = new \com\iusworks\jaguar\JaguarException();
+            $xfer += $this->ex->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('JaguarService_pushReport_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
       $xfer += $output->writeBool($this->success);

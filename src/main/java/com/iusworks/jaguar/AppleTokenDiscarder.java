@@ -51,7 +51,7 @@ public class AppleTokenDiscarder {
         logger.info("Start AppleTokenDiscarder. Size:{}", discardPairConcurrentLinkedQueue.size());
 
         while (!discardPairConcurrentLinkedQueue.isEmpty()) {
-            DiscardPair pair = discardPairConcurrentLinkedQueue.peek();
+            DiscardPair pair = discardPairConcurrentLinkedQueue.poll();
             if (pair == null) {
                 break;
             }

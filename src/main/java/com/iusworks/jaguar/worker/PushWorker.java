@@ -25,10 +25,10 @@ public class PushWorker implements ApplicationRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(PushWorker.class);
 
-
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
         logger.error("================");
     }
+
+
 }

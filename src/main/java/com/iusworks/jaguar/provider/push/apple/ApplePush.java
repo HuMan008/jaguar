@@ -19,8 +19,11 @@ import com.iusworks.jaguar.AppleTokenDiscarder;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.domain.DevicePlatformVoucher;
 import com.iusworks.jaguar.domain.DeviceState;
-import com.iusworks.jaguar.provider.push.Push;
+import com.iusworks.jaguar.provider.push.BatchExecutorManager;
+import com.iusworks.jaguar.provider.push.PushProviderEnum;
+import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
 import com.relayrides.pushy.apns.ApnsClient;
@@ -46,15 +49,16 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 @Component
-public class ApplePush implements Push {
+public class ApplePush implements Pushable {
 
     private static Logger logger = LoggerFactory.getLogger(ApplePush.class);
 
-    private static EventLoopGroup pushEventLoopGroup = new NioEventLoopGroup(32);
+    private static EventLoopGroup pushEventLoopGroup = new NioEventLoopGroup(64);
 
     private Map<Integer, APNSClientPack> apnsClientMaps = new HashMap<>();
 
@@ -86,9 +90,10 @@ public class ApplePush implements Push {
         reConnectToApns();
     }
 
+
     private ApnsClient clientWithCertificate(String cer, String password) throws Exception {
         ApnsClientBuilder builder = new ApnsClientBuilder();
-        File file = null;
+        File file;
 
         try {
             file = new File(cer);
@@ -199,8 +204,41 @@ public class ApplePush implements Push {
         return true;
     }
 
-    public void dopush(Notification notification, Device device, String topic, ApnsClient apnsClient) {
+    @Override
+    public void batchPush(Notification notification, List<Device> deviceList, String notifyId) {
+
+        for (Device d : deviceList) {
+            BatchExecutorManager.execute(() -> push(notification, d, notifyId));
+        }
+    }
+
+    @Override
+    public boolean isSupport(Map<String, String> deviceInfo) {
+        return false;
+    }
+
+    @Override
+    public PushProviderEnum provider() {
+        return PushProviderEnum.Apple;
+    }
+
+    private String appleToken(Device device) {
         String token = device.getVouch();
+        Map<String, DevicePlatformVoucher> dvmap = device.getDpv();
+        if (dvmap == null) {
+            return token;
+        }
+        DevicePlatformVoucher appleDPV = dvmap.get(PushProviderEnum.Apple.getDpvKey());
+
+        if (appleDPV != null && !StringUtils.isEmpty(appleDPV.getVoucher())) {
+            token = appleDPV.getVoucher();
+        }
+
+        return token;
+    }
+
+    public void dopush(Notification notification, Device device, String topic, ApnsClient apnsClient) {
+        String token = appleToken(device);
         if (StringUtils.isEmpty(token)) {
             return;
         }
@@ -242,12 +280,15 @@ public class ApplePush implements Push {
                             pushNotificationResponse.getRejectionReason(),
                             pushNotificationResponse.getTokenInvalidationTimestamp());
                     // 处理错误Token
-                    AppleTokenDiscarder.appendDiscardQueue(device.getId(), token);
                 } else {
                     logger.error("Notifi rejected by the APNs gateway: {}", pushNotificationResponse.getRejectionReason());
                 }
+
+                if (pushNotificationResponse.getRejectionReason().contains("BadDeviceToken")) {
+                    AppleTokenDiscarder.appendDiscardQueue(device.getId(), token);
+                }
             } else {
-                logger.info("Push to Apple Success:{}", pushNotificationResponse);
+                logger.info("Pushable to Apple Success:{}", pushNotificationResponse);
             }
         } catch (final Exception ex) {
             logger.error("Failed to send push notification. {}", ex);

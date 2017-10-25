@@ -18,11 +18,16 @@ package com.iusworks.jaguar.provider.push;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.thrift.Notification;
 
-public interface Push {
+import java.util.List;
+import java.util.Map;
+
+public interface Pushable {
 
     boolean push(Notification notification, Device device, String notifyId);
 
-//    void batchPush(Notification notification, List<Device> deviceList, List<String> notifyIdList);
+    void batchPush(Notification notification, List<Device> deviceList, String notifyId);
 
+    boolean isSupport(Map<String, String> deviceInfo);
 
+    PushProviderEnum provider();
 }

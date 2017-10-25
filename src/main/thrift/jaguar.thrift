@@ -29,7 +29,6 @@ struct Device {
     9: optional map<string,string> deviceInfo;
 }
 
-
 struct Notification {
     1: required Environment env;
     2: optional string uid;
@@ -45,7 +44,6 @@ struct Notification {
     12: optional i32 eventTime;  //事件发生事件
 }
 
-
 struct NotificationReport {
     1: required string notificationId;
     2: required i32 recvTime;
@@ -59,7 +57,6 @@ struct DeviceRequest {
     3: required string signature;
     4: required Device device;
 }
-
 
 struct DevicePlatformVoucherRequest {
     1: required i16 systemId;
@@ -94,7 +91,7 @@ struct NotificationReportRequest {
 struct NotificationHistory {
     1: required string mid;
     2: required string uid;
-    3: required i32  datetime;
+    3: required i32 datetime;
     4: required string action;
     5: required string title;
     6: required string alert;
@@ -110,6 +107,7 @@ service JaguarService {
     bool device(1:DeviceRequest deviceRequest) throws (1:JaguarException ex);
     bool devicePlatformVoucher(1:DevicePlatformVoucherRequest dpvRequest) throws (1:JaguarException ex);
     bool push(1:NotificationRequest notificationRequest) throws (1:JaguarException ex);
+    bool pushReport(1:NotificationReportRequest reportRequest) throws (1:JaguarException ex);
     list<NotificationHistory> notificationHistory(1:QueryNotificationRequest queryNotificationRequest) throws (1:JaguarException ex);
     bool notificationReport(1: NotificationReportRequest notificationReportRequest) throws (1:JaguarException ex);
 }

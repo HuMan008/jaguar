@@ -51,7 +51,6 @@ public class JaguarProperties {
 
         if (host != null ? !host.equals(that.host) : that.host != null) return false;
         return port != null ? port.equals(that.port) : that.port == null;
-
     }
 
     @Override

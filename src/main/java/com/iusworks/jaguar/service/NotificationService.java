@@ -20,6 +20,7 @@ import com.iusworks.jaguar.dao.NotificationDAO;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.domain.DeviceState;
 import com.iusworks.jaguar.domain.Notifi;
+import com.iusworks.jaguar.provider.push.BatchExecutorManager;
 import com.iusworks.jaguar.provider.push.Dispatcher;
 import com.iusworks.jaguar.provider.push.apple.ApplePush;
 import com.iusworks.jaguar.provider.push.leancloud.LeanCloudPush;
@@ -27,6 +28,7 @@ import com.iusworks.jaguar.thrift.DeviceType;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.thrift.NotificationHistory;
 import com.iusworks.jaguar.thrift.NotificationRequest;
+import org.apache.commons.collections.ListUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +38,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 public class NotificationService {
@@ -48,9 +48,6 @@ public class NotificationService {
     private ApplePush apns;
 
     @Autowired
-    private LeanCloudPush leanCloudPush;
-
-    @Autowired
     private Dispatcher dispatcher;
 
     @Autowired
@@ -59,9 +56,6 @@ public class NotificationService {
     @Autowired
     private NotificationDAO notificationDAO;
 
-    private ExecutorService executorService = Executors.newCachedThreadPool();
-
-
     /**
      * @param notificationRequest
      * @Unused notifyId
@@ -69,7 +63,7 @@ public class NotificationService {
     public void notify(NotificationRequest notificationRequest, String notifyId) {
 
         if (notificationRequest.getNotification().getUid() == null) {
-            batchAllNotify(notificationRequest);
+            batchAllNotify(notificationRequest, notifyId);
             return;
         }
 
@@ -85,7 +79,10 @@ public class NotificationService {
             return;
         }
 
-        logger.info("Push:{} Device:{}", notification, device);
+        dispatcher.push(notification, device, notifyId);
+
+        /*
+        logger.info("Pushable:{} Device:{}", notification, device);
         if (device.getType() == DeviceType.iOS.getValue()) {
             apns.push(notification, device, notifyId);
         } else if (device.getType() == DeviceType.Android.getValue()) {
@@ -93,11 +90,11 @@ public class NotificationService {
         } else {
             logger.error("Error Device Type:{}", device.getType());
         }
+        */
     }
 
-    private void batchAllNotify(NotificationRequest notificationRequest) {
-        BatchAllNotifyWorker worker = new BatchAllNotifyWorker(notificationRequest);
-        executorService.execute(worker);
+    private void batchAllNotify(NotificationRequest notificationRequest, String notifyId) {
+        BatchExecutorManager.execute(new BatchAllNotifyWorker(notificationRequest, notifyId));
     }
 
 
@@ -172,26 +169,29 @@ public class NotificationService {
 
         private NotificationRequest notificationRequest;
 
-        public BatchAllNotifyWorker(NotificationRequest notificationRequest) {
+        private String notifyId;
+
+        public BatchAllNotifyWorker(NotificationRequest notificationRequest, String notifyId) {
             this.notificationRequest = notificationRequest;
+            this.notifyId = notifyId;
         }
 
         @Override
         public void run() {
-            Notification notification = notificationRequest.getNotification();
-            Device device = new Device();
-            device.setSid(notificationRequest.getSystemId());
-            //TODO
-            leanCloudPush.push(notification, device, "");
+            // TODO
+            Integer size = 2048;
+            String startId = null;
+            List<Device> deviceList = deviceDAO.devicesWithPagination(notificationRequest.getSystemId(), startId, size);
+            while (deviceList != null && deviceList.size() > 0) {
+                List<Device> copyedList = new ArrayList<>(deviceList);
+                dispatcher.batchPush(notificationRequest.getNotification(), copyedList, notifyId);
 
-            List<Device> ds = deviceDAO.devicesOnlyIncludeMust(notificationRequest.getSystemId(), DeviceType.iOS.getValue());
-            for (Device d : ds) {
+                Device lastDevice = deviceList.get(deviceList.size() - 1);
+                startId = lastDevice.getId();
 
-                //TODO
-                apns.push(notification, d, "");
+                deviceList = deviceDAO.devicesWithPagination(notificationRequest.getSystemId(), startId, size);
             }
         }
-
     }
 
 
@@ -202,4 +202,5 @@ public class NotificationService {
 //
 //        logger.info("{} {}", now, now2);
 //    }
+
 }
