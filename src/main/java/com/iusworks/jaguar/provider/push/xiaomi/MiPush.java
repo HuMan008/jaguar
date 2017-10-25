@@ -19,6 +19,7 @@ import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.domain.DevicePlatformVoucher;
+import com.iusworks.jaguar.provider.push.PushDataHelper;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Notification;
@@ -71,7 +72,7 @@ public class MiPush implements Pushable {
         }
 
 
-        Message message = buildMessage(notification, notifyId, mi.get("package"));
+        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"));
         Sender sender = new Sender(mi.get("appSecret"));
 
         try {
@@ -103,7 +104,7 @@ public class MiPush implements Pushable {
             return;
         }
 
-        Message message = buildMessage(notification, notifyId, mi.get("package"));
+        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"));
         Sender sender = new Sender(mi.get("appSecret"));
 
         try {
@@ -159,13 +160,14 @@ public class MiPush implements Pushable {
     }
 
 
-    private Message buildMessage(Notification notification, String notifyId, String packageName) {
+    private Message buildMessage(Notification notification, String notifyId, String packageName, String appAction) {
         Message.Builder builder = new Message.Builder();
         builder.payload(notification.getAlert());
         builder.title(notification.getTitle());
         builder.description(notification.getAlert());
         builder.restrictedPackageName(packageName);
         builder.notifyId(notifyId.hashCode());
+        builder.payload(PushDataHelper.jsonStringData(notification, appAction));
         if (notification.getExtSize() > 0) {
             notification.getExt().forEach((k, v) -> builder.extra(k, v));
         }

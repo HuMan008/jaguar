@@ -18,6 +18,7 @@ jaguar:
           appKey: 5121751475162
           appSecret: T8LT/267JdxWRgpK7+1QMg==
           package: com.gt.app.gtecard
+          action: com.gt.app.gtecard.PUSH_RECEIVER
     - systemId: 5
       apns:
         topic: cn.ccc680.TVModule
@@ -34,6 +35,7 @@ jaguar:
           appKey: 5581762023678
           appSecret: ZYxFh+YqnbJZHP4RdBXfcw==
           package: com.ccc680.lottery
+          action: com.ccc680.lottery.PUSH_RECEIVER
 
 logging:
   level: debug

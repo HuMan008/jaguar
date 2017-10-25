@@ -19,12 +19,12 @@ import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.domain.DevicePlatformVoucher;
+import com.iusworks.jaguar.provider.push.PushDataHelper;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.tools.Hash;
 import com.mashape.unirest.http.Unirest;
-import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class LeanCloudPush implements Pushable {
@@ -43,15 +46,6 @@ public class LeanCloudPush implements Pushable {
     private PushProperties pushProperties;
 
     private static final String PUSH_URL = "https://leancloud.cn/1.1/push";
-
-    private static final Set<String> SpecActions = new HashSet<>();
-
-    static {
-        SpecActions.add("notice.balance");
-        SpecActions.add("notice.article");
-        SpecActions.add("notice.point");
-        SpecActions.add("notice.text");
-    }
 
 
     private Map<String, String> signHeaders(String appId, String masterKey) {
@@ -160,45 +154,7 @@ public class LeanCloudPush implements Pushable {
 
     public void dopush(Notification notification, Object installationId, String appId, String masterKey, String appAction) {
 
-        Map<String, Object> data = new HashedMap();
-        if (notification.getCategory() != null) {
-            data.put("category", notification.getCategory());
-        }
-
-        if (notification.getTitle() != null) {
-            data.put("title", notification.getTitle());
-        }
-
-
-        {  // Action 放入ext中，除了之前的几种定义好的。 最外层的Action使用AppAction
-
-            Map<String, String> ext = notification.getExt();
-            if (ext == null) {
-                ext = new HashMap<>();
-            }
-
-            if (notification.getAction() != null) {
-                ext.put("action", notification.getAction());
-            }
-
-            data.put("action", appAction);
-
-            if (notification.getAction() != null) {
-                if (SpecActions.contains(notification.getAction())) {
-                    data.put("action", notification.getAction());
-                }
-            }
-
-            data.put("ext", ext);
-        } //end
-
-
-        if (notification.getSound() != null) {
-            data.put("sound", notification.getSound());
-        }
-
-        data.put("silent", true);
-        data.put("alert", notification.getAlert());
+        Map<String, Object> data = PushDataHelper.data(notification, appAction);
 
         Map<String, Object> where = new HashMap<>();
         if (installationId != null) {
