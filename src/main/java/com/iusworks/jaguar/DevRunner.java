@@ -57,7 +57,7 @@ public class DevRunner {
     @Autowired
     private Dispatcher dispatcher;
 
-    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+//    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void dodododo() {
         Integer size = 16;
         String startId = null;
