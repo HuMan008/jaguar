@@ -60,7 +60,7 @@ public class MiPush implements Pushable {
         if (StringUtils.isEmpty(factory)) {
             return false;
         }
-        
+
         return factory.toLowerCase().contains("xiaomi");
     }
 
@@ -195,8 +195,10 @@ public class MiPush implements Pushable {
 
         if (passThrough) {
             builder.passThrough(1);
+//            logger.info("Pass Throught=============");
         } else {
             builder.extra(Constants.EXTRA_PARAM_NOTIFY_FOREGROUND, "0");
+            builder.passThrough(0);
         }
 
         /*
