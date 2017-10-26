@@ -125,10 +125,14 @@ public class LeanCloudPush implements Pushable {
     }
 
     @Override
-    public boolean isSupport(Map<String, String> deviceInfo) {
+    public boolean isSystemLevelSupport(Map<String, String> deviceInfo) {
         return true;
     }
 
+    @Override
+    public boolean canUseForSystemLevel() {
+        return false;
+    }
 
     @Override
     public PushProviderEnum provider() {
@@ -164,9 +168,8 @@ public class LeanCloudPush implements Pushable {
         payload.put("data", data);
         payload.put("where", where);
 
-
         //String response = AirHttpClient.POSTJSON(PUSH_URL, payload, signHeaders(appId, masterKey));
-        logger.info("LC=========={}", payload);
+//        logger.info("LC=========={}", payload);
         try {
             String response = Unirest.post(PUSH_URL).headers(signHeaders(appId, masterKey)).body(payload).asString().getBody();
             logger.info("response:{}", response);

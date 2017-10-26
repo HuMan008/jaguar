@@ -80,15 +80,15 @@ public class PushProviderAnalyzer {
         }
 
         Map<String, String> inf = device.getInfos();
-        if (miPush.isSupport(inf)) {
+        if (miPush.isSystemLevelSupport(inf)) {
             return miPush;
         }
 
-        if (huaweiPush.isSupport(inf)) {
+        if (huaweiPush.isSystemLevelSupport(inf)) {
             return huaweiPush;
         }
 
-        if (getuiPush.isSupport(inf)) {
+        if (getuiPush.isSystemLevelSupport(inf)) {
             return getuiPush;
         }
 

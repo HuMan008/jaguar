@@ -38,10 +38,14 @@ public class GetuiPush implements Pushable {
     }
 
     @Override
-    public boolean isSupport(Map<String, String> deviceInfo) {
+    public boolean isSystemLevelSupport(Map<String, String> deviceInfo) {
         return false;
     }
 
+    @Override
+    public boolean canUseForSystemLevel() {
+        return false;
+    }
 
     @Override
     public PushProviderEnum provider() {

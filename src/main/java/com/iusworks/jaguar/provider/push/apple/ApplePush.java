@@ -213,8 +213,18 @@ public class ApplePush implements Pushable {
     }
 
     @Override
-    public boolean isSupport(Map<String, String> deviceInfo) {
-        return false;
+    public boolean isSystemLevelSupport(Map<String, String> deviceInfo) {
+        if (deviceInfo == null) {
+            return false;
+        }
+
+        String factory = deviceInfo.get("F");
+        return "apple".equalsIgnoreCase(factory);
+    }
+
+    @Override
+    public boolean canUseForSystemLevel() {
+        return true;
     }
 
     @Override

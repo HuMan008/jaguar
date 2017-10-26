@@ -27,7 +27,9 @@ public interface Pushable {
 
     void batchPush(Notification notification, List<Device> deviceList, String notifyId);
 
-    boolean isSupport(Map<String, String> deviceInfo);
+    boolean isSystemLevelSupport(Map<String, String> deviceInfo);
+
+    boolean canUseForSystemLevel();
 
     PushProviderEnum provider();
 }

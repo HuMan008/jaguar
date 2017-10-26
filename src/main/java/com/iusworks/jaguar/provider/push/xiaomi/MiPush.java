@@ -52,7 +52,7 @@ public class MiPush implements Pushable {
 
 
     @Override
-    public boolean isSupport(Map<String, String> deviceInfo) {
+    public boolean isSystemLevelSupport(Map<String, String> deviceInfo) {
         if (deviceInfo == null) {
             return false;
         }
@@ -67,6 +67,11 @@ public class MiPush implements Pushable {
     }
 
     @Override
+    public boolean canUseForSystemLevel() {
+        return true;
+    }
+
+    @Override
     public boolean push(Notification notification, Device device, String notifyId) {
 
         Map<String, String> mi = xiaomi(device.getSid());
@@ -76,7 +81,7 @@ public class MiPush implements Pushable {
         }
 
 
-        boolean passThrough = !isSupport(device.getInfos());
+        boolean passThrough = !isSystemLevelSupport(device.getInfos());
         Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), passThrough);
         Sender sender = new Sender(mi.get("appSecret"));
 
@@ -122,7 +127,7 @@ public class MiPush implements Pushable {
                     logger.error("Device:{} for xiaomi voucher not found");
                     continue;
                 }
-                if (isSupport(device.getInfos())) {
+                if (isSystemLevelSupport(device.getInfos())) {
                     voucherList.add(voucher);
                 } else {
                     voucherListForPassThrough.add(voucher);
@@ -181,9 +186,9 @@ public class MiPush implements Pushable {
     }
 
 
-    private Message buildMessage(Notification notification, String notifyId, String packageName, String appAction, boolean passThrough) {
+    private Message buildMessage(Notification notification, String notifyId, String packageName, String appAction,
+                                 boolean passThrough) {
         Message.Builder builder = new Message.Builder();
-        builder.payload(notification.getAlert());
         builder.title(notification.getTitle());
         builder.description(notification.getAlert());
         builder.restrictedPackageName(packageName);
@@ -196,9 +201,12 @@ public class MiPush implements Pushable {
             builder.extra(Constants.EXTRA_PARAM_NOTIFY_FOREGROUND, "0");
         }
 
+        /*
+
         if (notification.getExtSize() > 0) {
             notification.getExt().forEach((k, v) -> builder.extra(k, v));
         }
+        */
         return builder.build();
     }
 

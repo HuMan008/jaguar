@@ -16,10 +16,7 @@ package com.iusworks.jaguar.provider.push;
 
 
 import com.iusworks.jaguar.domain.Device;
-import com.iusworks.jaguar.thrift.DeviceType;
 import com.iusworks.jaguar.thrift.Notification;
-import com.iusworks.jaguar.thrift.NotificationRequest;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +35,20 @@ public class Dispatcher {
     @Autowired
     private PushProviderAnalyzer pushProviderAnalyzer;
 
-    private Pushable pusher(Device device) {
+    private Pushable systemLevelPusher(Device device) {
         return pushProviderAnalyzer.analyzePusher(device);
     }
 
     public void push(Notification notification, Device device, String notifyId) {
-        Pushable pusher = pusher(device);
+        Pushable pusher = systemLevelPusher(device);
         if (pusher != null) {
+            logger.info("{}: Push {}", pusher.provider().getDpvKey(), notification);
             pusher.push(notification, device, notifyId);
         } else {
+            logger.info("All Android Providers: Push {}", notification);
             pushProviderAnalyzer.getAndroidProviders().forEach((e) -> e.push(notification, device, notifyId));
         }
     }
-
 
     public void batchPush(Notification notification, List<Device> deviceList, String notifyId) {
         if (deviceList == null || deviceList.size() < 1) {
@@ -65,8 +63,9 @@ public class Dispatcher {
         Map<Integer, List<Device>> providerDispatchListMap = new HashMap<>();
 
         List<Device> pushAllDevices = new ArrayList<>();
+
         for (Device device : deviceList) {
-            Pushable pusher = pusher(device);
+            Pushable pusher = systemLevelPusher(device);
             if (pusher == null) {
                 // push all
                 pushAllDevices.add(device);
@@ -94,6 +93,5 @@ public class Dispatcher {
 
         pushProviderAnalyzer.getAndroidProviders().forEach((e) -> e.batchPush(notification, pushAllDevices, notifyId));
     }
-
 
 }
