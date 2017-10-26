@@ -87,6 +87,7 @@ public class MiPush implements Pushable {
             DevicePlatformVoucher dpv = device.getDpv().get(PushProviderEnum.Xiaomi.getDpvKey());
             if (dpv == null) {
                 logger.error("Device:{} for xiaomi voucher not found");
+                return false;
             }
             sender.send(message, dpv.getVoucher(), 3);
         } catch (Exception ex) {

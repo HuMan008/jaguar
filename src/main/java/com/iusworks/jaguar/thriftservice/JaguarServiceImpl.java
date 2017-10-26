@@ -91,7 +91,6 @@ public class JaguarServiceImpl implements JaguarService.Iface {
     }
 
 
-
     @Override
     public boolean pushReport(NotificationReportRequest reportRequest) throws JaguarException, TException {
         return false;
@@ -112,7 +111,6 @@ public class JaguarServiceImpl implements JaguarService.Iface {
     public boolean notificationReport(NotificationReportRequest notificationReportRequest) throws JaguarException {
         return false;
     }
-
 
 
     private void notificationPreRequest(NotificationRequest notificationRequest) {
