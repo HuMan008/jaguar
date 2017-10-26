@@ -58,10 +58,8 @@ public class DeviceService {
         device.setInfos(deviceRequest.getDevice().getDeviceInfo());
 
         Set<DevicePlatformVoucher> requestVouchers = deviceRequest.getDevice().getDpv();
-        if (requestVouchers == null) {
-            device.setDpv(null);
-        } else {
-            Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> willInsertVouchers = new HashMap<>();
+        Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> willInsertVouchers = new HashMap<>();
+        if (requestVouchers != null) {
             for (DevicePlatformVoucher dpv : requestVouchers) {
                 com.iusworks.jaguar.domain.DevicePlatformVoucher v = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
                 v.setUpdatedAt(new Date());
@@ -69,9 +67,9 @@ public class DeviceService {
                 v.setState((int) dpv.getState());
                 willInsertVouchers.put(dpv.getPlatform(), v);
             }
-
-            device.setDpv(willInsertVouchers);
         }
+
+        device.setDpv(willInsertVouchers);
 
         logger.info("Update Device:{}", device);
         return deviceDAO.upsert(device);

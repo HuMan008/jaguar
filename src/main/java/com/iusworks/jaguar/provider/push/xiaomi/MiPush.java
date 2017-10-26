@@ -50,7 +50,6 @@ public class MiPush implements Pushable {
 
     private static Logger logger = LoggerFactory.getLogger(MiPush.class);
 
-
     @Override
     public boolean isSystemLevelSupport(Map<String, String> deviceInfo) {
         if (deviceInfo == null) {
@@ -61,8 +60,7 @@ public class MiPush implements Pushable {
         if (StringUtils.isEmpty(factory)) {
             return false;
         }
-
-
+        
         return factory.toLowerCase().contains("xiaomi");
     }
 
