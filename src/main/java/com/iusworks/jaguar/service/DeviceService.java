@@ -17,6 +17,7 @@ package com.iusworks.jaguar.service;
 
 import com.iusworks.jaguar.dao.DeviceDAO;
 import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.domain.DeviceState;
 import com.iusworks.jaguar.thrift.DevicePlatformVoucher;
 import com.iusworks.jaguar.thrift.DevicePlatformVoucherRequest;
 import com.iusworks.jaguar.thrift.DeviceRequest;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -42,6 +44,16 @@ public class DeviceService {
 
 
     public boolean persistDevice(DeviceRequest deviceRequest) {
+        com.iusworks.jaguar.thrift.Device rdev = deviceRequest.getDevice();
+
+        if (!StringUtils.isEmpty(rdev.getDeviceId())) {
+            if (rdev.getDeviceId().equalsIgnoreCase(rdev.getUid())) { //UID==DeviceID，表示设备没有用户登陆
+                deviceDAO.updateAllDeviceStateWithDeviceID(rdev.getDeviceId(), deviceRequest.getSystemId(), DeviceState.Disabled.getValue());
+            } else { //不相同，表示为一个已经登陆了用户信息的设备
+                deviceDAO.setDeivceState(rdev.getDeviceId(), deviceRequest.getSystemId(), DeviceState.Disabled.getValue());
+            }
+        }
+
         Device device = new Device();
         device.setSid(deviceRequest.getSystemId());
         device.setType((byte) deviceRequest.getDevice().getType().getValue());

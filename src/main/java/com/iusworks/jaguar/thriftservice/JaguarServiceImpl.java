@@ -90,12 +90,6 @@ public class JaguarServiceImpl implements JaguarService.Iface {
         return true;
     }
 
-
-    @Override
-    public boolean pushReport(NotificationReportRequest reportRequest) throws JaguarException, TException {
-        return false;
-    }
-
     @Override
     public List<NotificationHistory> notificationHistory(QueryNotificationRequest queryNotificationRequest) throws JaguarException {
 
@@ -106,6 +100,13 @@ public class JaguarServiceImpl implements JaguarService.Iface {
         return notificationService.histories(queryNotificationRequest.getSystemId(), queryNotificationRequest.getUid(),
                 queryNotificationRequest.getStart());
     }
+
+
+    @Override
+    public boolean pushReport(NotificationReportRequest reportRequest) throws JaguarException {
+        return notificationReport(reportRequest);
+    }
+
 
     @Override
     public boolean notificationReport(NotificationReportRequest notificationReportRequest) throws JaguarException {

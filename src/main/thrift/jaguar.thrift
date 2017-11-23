@@ -1,11 +1,18 @@
 namespace java com.iusworks.jaguar.thrift
 namespace php com.iusworks.jaguar
+namespace python com.iusworks.jaguar
+
 
 enum DeviceType {
     iOS = 1,
-    Android = 2
+    Android = 2,
+    WindowsPhone = 3,
+    Wechat = 10,
+    MobileWeb = 20,
+    Web = 40
 }
 
+// 推送环境
 enum Environment {
     Dev = 1,
     Prod = 2
@@ -23,8 +30,8 @@ struct Device {
     3: required string voucher;   
     4: optional set<string> tags;
     5: optional set<string> cares;   // 关心推送什么类型的数据
-    6: required i16 state;
-    7: optional string deviceId;    //设备ID
+    6: required i16 state;           // 状态
+    7: optional string deviceId;     //设备ID
     8: optional set<DevicePlatformVoucher> dpv;
     9: optional map<string,string> deviceInfo;
 }
@@ -41,7 +48,7 @@ struct Notification {
     9: optional map<string,string> ext;
     10: optional string storaged;
     11: optional i32 badge;
-    12: optional i32 eventTime;  //事件发生事件
+    12: optional i32 eventTime;  //事件发生时间
 }
 
 struct NotificationReport {

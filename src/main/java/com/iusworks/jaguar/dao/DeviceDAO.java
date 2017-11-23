@@ -29,6 +29,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +57,41 @@ public class DeviceDAO extends GenericMongoDAO<Device> {
         update.set("dpv." + PushProviderEnum.Apple.getDpvKey() + ".voucher", "");
         Query query = Query.query(criteria);
         WriteResult writeResult = mongoTemplate.updateFirst(query, update, Device.class);
+        return writeResult != null && writeResult.getN() > 0;
+    }
+
+    /**
+     * @param uid
+     * @param systemId
+     * @param state
+     * @return
+     */
+    public boolean setDeivceState(String uid, Short systemId, Byte state) {
+        Criteria criteria = Criteria.where("uid").is(uid).and("sid").is(systemId);
+        Update update = new Update();
+        update.set("state", state);
+        update.set("updateAt", new Date());
+
+        Query query = Query.query(criteria);
+        WriteResult writeResult = mongoTemplate.updateFirst(query, update, Device.class);
+        return writeResult != null && writeResult.getN() > 0;
+    }
+
+
+    /**
+     * @param deviceId
+     * @param systemId
+     * @param state
+     * @return
+     */
+    public boolean updateAllDeviceStateWithDeviceID(String deviceId, Short systemId, Byte state) {
+        Criteria criteria = Criteria.where("did").is(deviceId).and("sid").is(systemId);
+        Update update = new Update();
+        update.set("state", state);
+        update.set("updateAt", new Date());
+
+        Query query = Query.query(criteria);
+        WriteResult writeResult = mongoTemplate.updateMulti(query, update, Device.class);
         return writeResult != null && writeResult.getN() > 0;
     }
 

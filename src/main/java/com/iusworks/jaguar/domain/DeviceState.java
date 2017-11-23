@@ -17,7 +17,8 @@ package com.iusworks.jaguar.domain;
 
 public enum DeviceState {
     Normal((byte) 0),
-    Unused((byte) 1);
+    Unused((byte) 1),
+    Disabled((byte) 99);
 
     DeviceState(Byte value) {
         this.value = value;
