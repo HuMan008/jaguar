@@ -95,6 +95,8 @@ public class DeviceService {
         v.setVoucher(request.getDpv().getVoucher());
         v.setUpdatedAt(new Date());
 
+        logger.info("UpdatePlatformVoucher {}, {}, {}, {}", request.getSystemId(), request.getUid(),
+                request.getDpv().getPlatform(), v);
         return deviceDAO.updatePlatformDeviceVoucher(request.getSystemId(), request.getUid(),
                 request.getDpv().getPlatform(), v);
     }

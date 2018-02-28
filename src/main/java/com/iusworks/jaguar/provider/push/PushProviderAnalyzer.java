@@ -58,8 +58,10 @@ public class PushProviderAnalyzer {
         prividers.add(applePush);
         prividers.add(miPush);
         prividers.add(leanCloudPush);
+        prividers.add(huaweiPush);
 
         androidProviders.add(miPush);
+        androidProviders.add(huaweiPush);
         androidProviders.add(leanCloudPush);
     }
 

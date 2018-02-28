@@ -19,6 +19,12 @@ jaguar:
           appSecret: T8LT/267JdxWRgpK7+1QMg==
           package: com.gt.app.gtecard
           action: com.gt.app.gtecard.PUSH_RECEIVER
+        huawei:
+          appId: 100027033
+          appSecret: 775dd0b7dc11a2a16bb882a9841735d9
+          action: com.gt.app.gtecard.PUSH_RECEIVER
+          appPkgName: com.gt.app.gtecard
+
     - systemId: 5
       apns:
         topic: cn.ccc680.TVModule
@@ -36,6 +42,8 @@ jaguar:
           appSecret: ZYxFh+YqnbJZHP4RdBXfcw==
           package: com.ccc680.lottery
           action: com.ccc680.lottery.PUSH_RECEIVER
+        huawei:
+
 
 logging:
   level: debug

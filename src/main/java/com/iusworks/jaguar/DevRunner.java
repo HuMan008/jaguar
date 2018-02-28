@@ -17,6 +17,8 @@ package com.iusworks.jaguar;
 
 import com.iusworks.jaguar.dao.DeviceDAO;
 import com.iusworks.jaguar.provider.push.Dispatcher;
+import com.iusworks.jaguar.provider.push.PushProviderEnum;
+import com.iusworks.jaguar.provider.push.huawei.HuaweiPush;
 import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
 import com.iusworks.jaguar.thrift.*;
 import org.slf4j.Logger;
@@ -25,8 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class DevRunner {
@@ -57,7 +58,10 @@ public class DevRunner {
     @Autowired
     private Dispatcher dispatcher;
 
-//    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    @Autowired
+    private HuaweiPush huaweiPush;
+
+    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void dodododo() {
         Integer size = 16;
         String startId = null;
@@ -86,6 +90,36 @@ public class DevRunner {
 
     }
 
+//    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    public void testHuawei() {
+        Notification notification = new Notification();
+        notification.setAction("abc");
+        notification.setAlert("测试alert");
+        notification.setTitle("测试title");
+        notification.setStoraged("......");
+
+        notification.putToExt("notifyId", "1222");
+
+        com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
+        device.setSid((short) 4);
+        com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
+        hw.setVoucher("0866938023933488300001187300CN01");
+        hw.setState(0);
+        hw.setReqTime(new Date());
+        hw.setUpdatedAt(hw.getReqTime());
+
+        Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
+        dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
+
+        Map<String, String> infos = new HashMap<>();
+        infos.put("F", "honor");
+        device.setInfos(infos);
+
+        device.setDpv(dpv);
+
+        huaweiPush.push(notification, device, "123");
+    }
+
     public void testMi() {
 
         Notification notification = new Notification();
@@ -96,7 +130,7 @@ public class DevRunner {
 
 
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
-        device.setSid((short) 5);
+
 
         miPush.push(notification, device, null);
 

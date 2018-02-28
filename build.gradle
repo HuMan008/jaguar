@@ -52,7 +52,8 @@ dependencies {
     compile group: 'org.apache.thrift', name: 'libthrift', version: '0.10.0'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2'
 
-    compile group: 'com.relayrides', name: 'pushy', version: '0.9.3'
+//    compile group: 'com.relayrides', name: 'pushy', version: '0.9.3'
+    compile group: 'com.turo', name: 'pushy', version: '0.12.0'
 
     compile fileTree(dir: 'vendor', include: '**/*.jar')
 

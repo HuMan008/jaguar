@@ -17,7 +17,6 @@ package com.iusworks.jaguar;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
-import org.apache.thrift.transport.TTransportException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -35,7 +34,7 @@ public class App {
 //    private static Logger logger = LoggerFactory.getLogger(App.class);
 
 
-    public static void main(String[] args) throws TTransportException {
+    public static void main(String[] args) {
         configUnirestObjectMapper();
         applicationContext = SpringApplication.run(App.class, args);
     }
