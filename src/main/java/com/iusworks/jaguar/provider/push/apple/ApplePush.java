@@ -26,12 +26,11 @@ import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Environment;
 import com.iusworks.jaguar.thrift.Notification;
-import com.relayrides.pushy.apns.ApnsClient;
-import com.relayrides.pushy.apns.ApnsClientBuilder;
-import com.relayrides.pushy.apns.ClientNotConnectedException;
-import com.relayrides.pushy.apns.PushNotificationResponse;
-import com.relayrides.pushy.apns.util.ApnsPayloadBuilder;
-import com.relayrides.pushy.apns.util.SimpleApnsPushNotification;
+import com.turo.pushy.apns.ApnsClient;
+import com.turo.pushy.apns.ApnsClientBuilder;
+import com.turo.pushy.apns.PushNotificationResponse;
+import com.turo.pushy.apns.util.ApnsPayloadBuilder;
+import com.turo.pushy.apns.util.SimpleApnsPushNotification;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Future;
@@ -45,7 +44,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,21 +75,21 @@ public class ApplePush implements Pushable {
             String cerpath = pushItem.getApns().getCerpath();
             String cerpass = pushItem.getApns().getCerpass();
 
-            pack.setApnsClientProd(clientWithCertificate(cerpath, cerpass));
+            pack.setApnsClientProd(clientWithCertificate(cerpath, cerpass, false));
 
             String cerpathdev = cerpath.replace(".p12", "_dev.p12");
-            pack.setApnsClientDev(clientWithCertificate(cerpathdev, cerpass));
+            pack.setApnsClientDev(clientWithCertificate(cerpathdev, cerpass,true));
 
             if (pack.getApnsClientDev() != null || pack.getApnsClientProd() != null) {
                 apnsClientMaps.put(pushItem.getSystemId(), pack);
             }
         }
 
-        reConnectToApns();
+//        reConnectToApns();
     }
 
 
-    private ApnsClient clientWithCertificate(String cer, String password) throws Exception {
+    private ApnsClient clientWithCertificate(String cer, String password, boolean devEnv) throws Exception {
         ApnsClientBuilder builder = new ApnsClientBuilder();
         File file;
 
@@ -113,16 +111,23 @@ public class ApplePush implements Pushable {
         }
 
         builder.setClientCredentials(file, password);
+        if (devEnv) {
+            builder.setApnsServer(ApnsClientBuilder.DEVELOPMENT_APNS_HOST);
+        } else {
+            builder.setApnsServer(ApnsClientBuilder.PRODUCTION_APNS_HOST);
+        }
 
         return builder.setEventLoopGroup(pushEventLoopGroup).build();
     }
 
 
+    /*
     @PreDestroy
     void destruct() throws Exception {
 
         for (APNSClientPack pack : apnsClientMaps.values()) {
             ApnsClient clientProd = pack.getApnsClientProd();
+
             if (clientProd != null && clientProd.isConnected()) {
                 clientProd.disconnect();
             }
@@ -169,6 +174,8 @@ public class ApplePush implements Pushable {
             }
         }
     }
+
+    */
 
     public boolean push(Notification notification, Device device, String notifyId) {
         if (device.getState().byteValue() != DeviceState.Normal.getValue().byteValue()) {
@@ -303,6 +310,7 @@ public class ApplePush implements Pushable {
         } catch (final Exception ex) {
             logger.error("Failed to send push notification. {}", ex);
 
+            /*
             if (ex.getCause() instanceof ClientNotConnectedException) {
                 logger.info("Waiting for client to reconnect…");
                 try {
@@ -312,6 +320,7 @@ public class ApplePush implements Pushable {
                     logger.error("{}", iex);
                 }
             }
+            */
         }
     }
 

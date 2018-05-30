@@ -51,7 +51,7 @@ logging:
 spring:
   redis:
     database: 9
-    host: "201.201.201.173"
+    host: "127.0.0.1"
     port: 6379
     timeout: 5000
     pool:
