@@ -52,9 +52,12 @@ jaguar:
           appKey: 5201781214854
           appSecret: HZEppWHURGgtyzSdKM477A==
           package: com.gt.app.gtskecard
-          action: ccom.gt.app.gtskecard.PUSH_RECEIVER
+          action: com.gt.app.gtskecard.PUSH_RECEIVER
         huawei:
           appId: 100304015
+          appSecret: cc58e0bb39da1fb1254809967aea2ca9
+          action: com.gt.app.gtskecard.PUSH_RECEIVER
+          appPkgName: com.gt.app.gtskecard
 logging:
   level: info
   path: logs
