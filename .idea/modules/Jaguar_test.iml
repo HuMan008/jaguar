@@ -44,8 +44,8 @@
     <orderEntry type="library" name="Gradle: com.turo:pushy:0.13.2" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-test:1.4.7.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter:1.4.7.RELEASE" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: mysql:mysql-connector-java:5.1.42" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.data:spring-data-redis:1.7.11.RELEASE" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: mysql:mysql-connector-java:5.1.42" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.data:spring-data-mongodb:1.9.11.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-test-autoconfigure:1.4.7.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-test:1.4.7.RELEASE" level="project" />
