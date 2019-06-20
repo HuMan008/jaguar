@@ -5,7 +5,7 @@ LABEL maintainer="master@pgt"
 RUN mkdir /application
 RUN mkdir /application/config
 RUN mkdir /application/logs
-RUN mkidr /application/apns
+RUN mkdir /application/apns
 
 COPY ./build/libs/jaguar-0.0.1-SNAPSHOT.jar /application/jaguar.jar
 
