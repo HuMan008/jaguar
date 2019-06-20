@@ -7,11 +7,13 @@ RUN mkdir /application/config
 RUN mkdir /application/logs
 
 COPY ./build/libs/jaguar-0.0.1-SNAPSHOT.jar /application/jaguar.jar
+
 COPY ./apns /appplication/apns
 
-RUN ls /appplication/apns/
 
 WORKDIR /application
 
 
-CMD ["java", "-Dfile.encoding=UTF-8","-jar", "jaguar.jar"]
+#CMD ["java", "-Dfile.encoding=UTF-8","-jar", "jaguar.jar"]
+
+CMD ["tail", "-f", "/dev/null"]
