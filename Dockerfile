@@ -5,13 +5,13 @@ LABEL maintainer="master@pgt"
 RUN mkdir /application
 RUN mkdir /application/config
 RUN mkdir /application/logs
-
+RUN mkidr /application/apns
 
 COPY ./build/libs/jaguar-0.0.1-SNAPSHOT.jar /application/jaguar.jar
 
-ADD apns /appplication
+COPY ./apns/* /appplication/apns/
 
 WORKDIR /application
 
 
-CMD ["java", "-Dfile.encoding=UTF-8","-jar", "/application/jaguar.jar"]
+CMD ["java", "-Dfile.encoding=UTF-8","-jar", "jaguar.jar"]
