@@ -15,6 +15,7 @@
 package com.iusworks.jaguar;
 
 import com.iusworks.jaguar.config.JaguarProperties;
+import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.thrift.JaguarService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.server.TServer;
@@ -40,6 +41,9 @@ public class JaguarRunner implements CommandLineRunner {
 
     @Autowired
     private JaguarProperties jaguarProperties;
+
+    @Autowired
+    private PushProperties pushProperties;
 
     @Override
     public void run(String... args) throws Exception {
@@ -80,6 +84,7 @@ public class JaguarRunner implements CommandLineRunner {
         serverArgs.protocolFactory(TBinaryProtocol::new);
         TServer tServer = new TThreadPoolServer(serverArgs);
         logger.info("Jaguar Started, Listen at : {}", socketAddress);
+        logger.info("Pushes:{}", pushProperties.toString());
         tServer.serve();
     }
 
