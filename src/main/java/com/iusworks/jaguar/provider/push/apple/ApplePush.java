@@ -264,6 +264,7 @@ public class ApplePush implements Pushable {
         apnsPayloadBuilder.setAlertBody(notification.getAlert());
         if (!StringUtils.isEmpty(notification.getTitle())) {
             apnsPayloadBuilder.setAlertTitle(notification.getTitle());
+
         }
         apnsPayloadBuilder.setBadgeNumber(notification.getBadge());
 

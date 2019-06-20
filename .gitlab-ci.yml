@@ -1,0 +1,35 @@
+image: docker:stable
+
+services:
+  - name: docker:dind
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mkdir -p /etc/docker/certs.d/registry.pgt
+        wget http://registry.pgt:8000/registry.pgt.crt -O /etc/docker/certs.d/registry.pgt/ca.crt || exit
+        mkdir -p /etc/docker/certs.d/harbor.pgt
+        wget http://registry.pgt:8000/harbor.pgt.crt -O /etc/docker/certs.d/harbor.pgt/ca.crt || exit
+        dockerd-entrypoint.sh || exit
+
+# wget http://registry.pgt:8000/registry.pgt.crt -O /usr/local/share/ca-certificates/registry.pgt.crt && update-ca-certificates && dockerd-entrypoint.sh || exit
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - docker info
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - docker pull harbor.pgt/library/gradle:4.10-jdk8
+
+
+build-master:
+  stage: build
+  script:
+    - pwd
+    - docker run --rm -u root --add-host nexus.pgt:200.200.201.12 -v "$PWD":/home/gradle/project -w /home/gradle/project harbor.pgt/library/gradle:4.10-jdk8 gradle bootRepackage
+    - docker build -t registry.pgt/release/jaguar .
+    - docker push registry.pgt/release/jaguar
+  only:
+    - master

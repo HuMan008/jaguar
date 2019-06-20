@@ -1,110 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="MySQL - Jaguar@localhost">
-  <database-model serializer="dbm" rdbms="MYSQL" format-version="2.6">
-    <schema id="1" name="Jaguar">
-      <visible>1</visible>
+  <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.15">
+    <root id="1"/>
+    <schema id="2" parent="1" name="Jaguar">
+      <Visible>1</Visible>
     </schema>
-    <schema id="2" name="Airjet"/>
-    <schema id="3" name="develop_common"/>
-    <schema id="4" name="information_schema"/>
-    <schema id="5" name="lanneret"/>
-    <schema id="6" name="mysql"/>
-    <schema id="7" name="performance_schema"/>
-    <schema id="8" name="planat"/>
-    <schema id="9" name="test"/>
-    <table id="10" parent="1" name="uar_user"/>
-    <table id="11" parent="1" name="uar_system"/>
-    <column id="12" parent="10" name="id">
-      <mandatory>1</mandatory>
-      <data-type>int(10) unsigned|0</data-type>
-      <sequence-identity>1</sequence-identity>
+    <schema id="3" parent="1" name="Airjet"/>
+    <schema id="4" parent="1" name="develop_common"/>
+    <schema id="5" parent="1" name="information_schema"/>
+    <schema id="6" parent="1" name="lanneret"/>
+    <schema id="7" parent="1" name="mysql"/>
+    <schema id="8" parent="1" name="performance_schema"/>
+    <schema id="9" parent="1" name="planat"/>
+    <schema id="10" parent="1" name="test"/>
+    <table id="11" parent="2" name="uar_user"/>
+    <table id="12" parent="2" name="uar_system"/>
+    <column id="13" parent="11" name="id">
+      <DataType>int(10) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="13" parent="10" name="sys_id">
-      <mandatory>1</mandatory>
-      <data-type>int(10) unsigned|0</data-type>
+    <column id="14" parent="11" name="sys_id">
+      <DataType>int(10) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
     </column>
-    <column id="14" parent="10" name="sys_uid">
-      <mandatory>1</mandatory>
-      <data-type>char(32)|0</data-type>
-      <default-expression>&apos;&apos;</default-expression>
+    <column id="15" parent="11" name="sys_uid">
+      <DataType>char(32)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="15" parent="10" name="os">
-      <mandatory>1</mandatory>
-      <data-type>tinyint(2)|0</data-type>
+    <column id="16" parent="11" name="os">
+      <DataType>tinyint(2)|0s</DataType>
+      <NotNull>1</NotNull>
     </column>
-    <column id="16" parent="10" name="voucher">
-      <mandatory>1</mandatory>
-      <data-type>varchar(128)|0</data-type>
-      <default-expression>&apos;&apos;</default-expression>
+    <column id="17" parent="11" name="voucher">
+      <DataType>varchar(128)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="17" parent="10" name="create_at">
-      <mandatory>1</mandatory>
-      <data-type>datetime|0</data-type>
-      <default-expression>CURRENT_TIMESTAMP</default-expression>
+    <column id="18" parent="11" name="create_at">
+      <DataType>datetime|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <column id="18" parent="10" name="update_at">
-      <data-type>datetime|0</data-type>
+    <column id="19" parent="11" name="update_at">
+      <DataType>datetime|0s</DataType>
     </column>
-    <column id="19" parent="10" name="state">
-      <mandatory>1</mandatory>
-      <data-type>tinyint(2)|0</data-type>
-      <default-expression>&apos;0&apos;</default-expression>
+    <column id="20" parent="11" name="state">
+      <DataType>tinyint(2)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <index id="20" parent="10" name="sys_id">
-      <columns>sys_id
-sys_uid</columns>
-      <desc-columns></desc-columns>
-      <unique>1</unique>
+    <index id="21" parent="11" name="sys_id">
+      <ColNames>sys_id
+sys_uid</ColNames>
+      <Unique>1</Unique>
     </index>
-    <key id="21" parent="10" name="PRIMARY">
-      <columns>id</columns>
-      <primary>1</primary>
+    <key id="22" parent="11" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
     </key>
-    <key id="22" parent="10" name="sys_id">
-      <columns>sys_id
-sys_uid</columns>
-      <underlying-index>sys_id</underlying-index>
+    <key id="23" parent="11" name="sys_id">
+      <ColNames>sys_id
+sys_uid</ColNames>
+      <UnderlyingIndexName>sys_id</UnderlyingIndexName>
     </key>
-    <column id="23" parent="11" name="id">
-      <mandatory>1</mandatory>
-      <data-type>int(10) unsigned|0</data-type>
-      <sequence-identity>1</sequence-identity>
+    <column id="24" parent="12" name="id">
+      <DataType>int(10) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="24" parent="11" name="name">
-      <mandatory>1</mandatory>
-      <data-type>char(64)|0</data-type>
-      <default-expression>&apos;&apos;</default-expression>
+    <column id="25" parent="12" name="name">
+      <DataType>char(64)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="25" parent="11" name="description">
-      <mandatory>1</mandatory>
-      <data-type>varchar(512)|0</data-type>
+    <column id="26" parent="12" name="description">
+      <DataType>varchar(512)|0s</DataType>
+      <NotNull>1</NotNull>
     </column>
-    <column id="26" parent="11" name="android_config">
-      <mandatory>1</mandatory>
-      <data-type>varchar(512)|0</data-type>
-      <default-expression>&apos;&apos;</default-expression>
+    <column id="27" parent="12" name="android_config">
+      <DataType>varchar(512)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="27" parent="11" name="ios_config">
-      <mandatory>1</mandatory>
-      <data-type>varchar(512)|0</data-type>
-      <default-expression>&apos;&apos;</default-expression>
+    <column id="28" parent="12" name="ios_config">
+      <DataType>varchar(512)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;&apos;</DefaultExpression>
     </column>
-    <column id="28" parent="11" name="create_at">
-      <mandatory>1</mandatory>
-      <data-type>datetime|0</data-type>
-      <default-expression>CURRENT_TIMESTAMP</default-expression>
+    <column id="29" parent="12" name="create_at">
+      <DataType>datetime|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
     </column>
-    <column id="29" parent="11" name="update_at">
-      <data-type>datetime|0</data-type>
+    <column id="30" parent="12" name="update_at">
+      <DataType>datetime|0s</DataType>
     </column>
-    <column id="30" parent="11" name="state">
-      <mandatory>1</mandatory>
-      <data-type>tinyint(2)|0</data-type>
-      <default-expression>&apos;0&apos;</default-expression>
+    <column id="31" parent="12" name="state">
+      <DataType>tinyint(2)|0s</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;0&apos;</DefaultExpression>
     </column>
-    <key id="31" parent="11" name="PRIMARY">
-      <columns>id</columns>
-      <primary>1</primary>
+    <key id="32" parent="12" name="PRIMARY">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
     </key>
   </database-model>
 </dataSource>

@@ -5,7 +5,7 @@ buildscript {
 
     repositories {
         maven {
-            url "http://201.201.201.174:8081/nexus/content/groups/public/"
+            url "http://nexus.pgt:8081/repository/pgtmaven/"
         }
     }
 
@@ -28,7 +28,7 @@ targetCompatibility = 1.8
 
 repositories {
     maven {
-        url "http://201.201.201.174:8081/nexus/content/groups/public/"
+        url "http://nexus.pgt:8081/repository/pgtmaven/"
     }
 }
 
