@@ -82,7 +82,7 @@ spring:
       max-wait: -1
   data:
     mongodb:
-      uri: "mongodb://200.200.209.21:27017,200.200.209.22:27017,200.200.209.23:27017/Jaguar"
+      uri: "mongodb://201.201.201.174:27017/Jaguar"
 
 
 

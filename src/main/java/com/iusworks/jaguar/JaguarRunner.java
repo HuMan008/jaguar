@@ -46,6 +46,9 @@ public class JaguarRunner implements CommandLineRunner {
         JaguarService.Processor jaguarServiceProcessor = new JaguarService.Processor<>(jaguarServiceFace);
 
         InetAddress inetAddress;
+
+        logger.info("{}", jaguarProperties.toString());
+
         if (!jaguarProperties.getHost().matches("^\\d+?\\.\\d+?\\.\\d+?\\.\\d+?$")) {
             inetAddress = InetAddress.getLocalHost();
         } else {
@@ -56,8 +59,15 @@ public class JaguarRunner implements CommandLineRunner {
             }
             inetAddress = InetAddress.getByAddress(addbits);
         }
+        
+        InetSocketAddress socketAddress;
+        try {
+            socketAddress = new InetSocketAddress(inetAddress, jaguarProperties.getPort());
+        } catch (Exception ex) {
+            logger.error("{}", ex);
+            socketAddress = new InetSocketAddress(jaguarProperties.getPort());
+        }
 
-        InetSocketAddress socketAddress = new InetSocketAddress(inetAddress, jaguarProperties.getPort());
         TServerSocket socket = new TServerSocket(socketAddress);
         TThreadPoolServer.Args serverArgs = new TThreadPoolServer.Args(socket);
         serverArgs.processor(jaguarServiceProcessor);
