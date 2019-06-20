@@ -1,6 +1,6 @@
 jaguar:
   host: 0.0.0.0
-  port: 18090
+  ppport: 18090
   pushs:
     - systemId: 4
       apns:

@@ -26,7 +26,7 @@ public class JaguarProperties {
 
     private String host;
 
-    private Integer port;
+    private Integer ppport;
 
     public String getHost() {
         return host;
@@ -36,19 +36,19 @@ public class JaguarProperties {
         this.host = host;
     }
 
-    public Integer getPort() {
-        return port;
+    public Integer getPpport() {
+        return ppport;
     }
 
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setPpport(Integer ppport) {
+        this.ppport = ppport;
     }
 
     @Override
     public String toString() {
         return "JaguarProperties{" +
                 "host='" + host + '\'' +
-                ", port=" + port +
+                ", ppport=" + ppport +
                 '}';
     }
 
@@ -58,11 +58,11 @@ public class JaguarProperties {
         if (!(o instanceof JaguarProperties)) return false;
         JaguarProperties that = (JaguarProperties) o;
         return Objects.equals(host, that.host) &&
-                Objects.equals(port, that.port);
+                Objects.equals(ppport, that.ppport);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(host, port);
+        return Objects.hash(host, ppport);
     }
 }

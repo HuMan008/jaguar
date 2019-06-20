@@ -53,8 +53,8 @@ public class JaguarRunner implements CommandLineRunner {
 
         logger.info("{}", jaguarProperties.toString());
 
-        if (jaguarProperties.getPort() == null) {
-            jaguarProperties.setPort(1024);
+        if (jaguarProperties.getPpport() == null) {
+            jaguarProperties.setPpport(1024);
         }
 
         if (!jaguarProperties.getHost().matches("^\\d+?\\.\\d+?\\.\\d+?\\.\\d+?$")) {
@@ -70,10 +70,10 @@ public class JaguarRunner implements CommandLineRunner {
 
         InetSocketAddress socketAddress;
         try {
-            socketAddress = new InetSocketAddress(inetAddress, jaguarProperties.getPort());
+            socketAddress = new InetSocketAddress(inetAddress, jaguarProperties.getPpport());
         } catch (Exception ex) {
             logger.error("{}", ex);
-            socketAddress = new InetSocketAddress(jaguarProperties.getPort());
+            socketAddress = new InetSocketAddress(jaguarProperties.getPpport());
         }
 
         TServerSocket socket = new TServerSocket(socketAddress);
