@@ -8,7 +8,8 @@ RUN mkdir /application/logs
 
 
 COPY ./build/libs/jaguar-0.0.1-SNAPSHOT.jar /application/jaguar.jar
-COPY ./apns /appplication
+
+ADD apns /appplication
 
 WORKDIR /application
 
