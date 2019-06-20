@@ -49,6 +49,10 @@ public class JaguarRunner implements CommandLineRunner {
 
         logger.info("{}", jaguarProperties.toString());
 
+        if (jaguarProperties.getPort() == null) {
+            jaguarProperties.setPort(1024);
+        }
+
         if (!jaguarProperties.getHost().matches("^\\d+?\\.\\d+?\\.\\d+?\\.\\d+?$")) {
             inetAddress = InetAddress.getLocalHost();
         } else {
@@ -59,7 +63,7 @@ public class JaguarRunner implements CommandLineRunner {
             }
             inetAddress = InetAddress.getByAddress(addbits);
         }
-        
+
         InetSocketAddress socketAddress;
         try {
             socketAddress = new InetSocketAddress(inetAddress, jaguarProperties.getPort());

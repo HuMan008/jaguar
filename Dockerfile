@@ -14,6 +14,6 @@ COPY ./apns /application/apns
 WORKDIR /application
 
 
-#CMD ["java", "-Dfile.encoding=UTF-8","-jar", "jaguar.jar"]
+CMD ["java", "-Dfile.encoding=UTF-8","-jar", "jaguar.jar"]
 
-CMD ["tail", "-f", "/dev/null"]
+#CMD ["tail", "-f", "/dev/null"]

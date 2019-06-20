@@ -18,6 +18,8 @@ package com.iusworks.jaguar.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 @ConfigurationProperties(prefix = "jaguar")
 public class JaguarProperties {
@@ -43,28 +45,24 @@ public class JaguarProperties {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof JaguarProperties)) return false;
-
-        JaguarProperties that = (JaguarProperties) o;
-
-        if (host != null ? !host.equals(that.host) : that.host != null) return false;
-        return port != null ? port.equals(that.port) : that.port == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = host != null ? host.hashCode() : 0;
-        result = 31 * result + (port != null ? port.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "JaguarProperties{" +
                 "host='" + host + '\'' +
                 ", port=" + port +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof JaguarProperties)) return false;
+        JaguarProperties that = (JaguarProperties) o;
+        return Objects.equals(host, that.host) &&
+                Objects.equals(port, that.port);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(host, port);
     }
 }
