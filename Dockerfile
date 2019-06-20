@@ -13,4 +13,4 @@ COPY ./apns /appplication
 WORKDIR /application
 
 
-CMD ["java", "-Dfile.encoding=UTF-8","-jar", "/application/airjet.jar"]
+CMD ["java", "-Dfile.encoding=UTF-8","-jar", "/application/jaguar.jar"]
