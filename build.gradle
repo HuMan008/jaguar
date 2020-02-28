@@ -5,7 +5,7 @@ buildscript {
 
     repositories {
         maven {
-            url "http://nexus.pgt:8081/repository/pgtmaven/"
+            url "http://nexus.petroun.com:8081/repository/maven-public/"
         }
     }
 
@@ -16,7 +16,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 
 jar {
     baseName = 'jaguar'
@@ -28,7 +28,7 @@ targetCompatibility = 1.8
 
 repositories {
     maven {
-        url "http://nexus.pgt:8081/repository/pgtmaven/"
+        url "http://nexus.petroun.com:8081/repository/maven-public/"
     }
 }
 
@@ -44,20 +44,18 @@ dependencies {
 //	compile group: 'org.mybatis.generator', name: 'mybatis-generator-core', version: '1.3.5'
 //	compile group: 'org.mongodb', name: 'bson', version: '3.3.0'
 
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.3'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
     compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
 
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-//  compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
-    compile group: 'org.apache.thrift', name: 'libthrift', version: '0.10.0'
-    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.thrift', name: 'libthrift', version: '0.13.0'
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
 
-//    compile group: 'com.relayrides', name: 'pushy', version: '0.9.3'
-    compile group: 'com.turo', name: 'pushy', version: '0.13.2'
+    compile group: 'com.turo', name: 'pushy', version: '0.13.10'
 
     compile fileTree(dir: 'vendor', include: '**/*.jar')
 
-    runtime('mysql:mysql-connector-java')
+//    runtime('mysql:mysql-connector-java')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
