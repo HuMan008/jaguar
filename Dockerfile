@@ -1,4 +1,4 @@
-FROM registry.pgt/base/java8:latest
+FROM registry.petroun.com/base/java8:latest
 
 LABEL maintainer="master@pgt"
 
