@@ -1,7 +1,7 @@
 image: docker:stable
 
 services:
-  - name: docker:18.09-dind
+  - name: registry.petroun.com/library/docker:18.09-dind
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
