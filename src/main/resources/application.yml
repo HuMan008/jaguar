@@ -2,48 +2,70 @@ jaguar:
   host: 0.0.0.0
   ppport: 18090
   pushs:
-    - systemId: 4
-      apns:
-        topic: guotong.GtOilStorage
-        cerpath: apns/guotong.p12
-        cerpass: 123456
-      androids:
-        leancloud:
-          action: com.gt.app.gtecard.PUSH_RECEIVER
-          appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
-          appKey: 7WsfQY6CM52MhX2BeF9XcOyN
-          masterKey: LlCowinwbCplX4lxc4QCIl26
-        xiaomi:
-          appId: 2882303761517514162
-          appKey: 5121751475162
-          appSecret: T8LT/267JdxWRgpK7+1QMg==
-          package: com.gt.app.gtecard
-          action: com.gt.app.gtecard.PUSH_RECEIVER
-        huawei:
-          appId: 100027033
-          appSecret: 775dd0b7dc11a2a16bb882a9841735d9
-          action: com.gt.app.gtecard.PUSH_RECEIVER
-          appPkgName: com.gt.app.gtecard
-
-    - systemId: 5
-      apns:
-        topic: cn.ccc680.TVModule
-        cerpath: apns/caipiao.p12
-        cerpass: 654321
-      androids:
-        leancloud:
-          action: com.ccc680.lottery.PUSH_RECEIVER
-          appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
-          appKey: VUmTpmQgqT2lcALQcdBbNc1f
-          masterKey: h89SUasqidddXG9nUwmrJ6YB
-        xiaomi:
-          appId: 2882303761517620678
-          appKey: 5581762023678
-          appSecret: ZYxFh+YqnbJZHP4RdBXfcw==
-          package: com.ccc680.lottery
-          action: com.ccc680.lottery.PUSH_RECEIVER
-        huawei:
-    - systemId: 6
+#    - systemId: 4
+#      apns:
+#        topic: guotong.GtOilStorage
+#        cerpath: apns/guotong.p12
+#        cerpass: 123456
+#      androids:
+#        leancloud:
+#          action: com.gt.app.gtecard.PUSH_RECEIVER
+#          appId: uqJGEgRR5sblpLEQTNzLHsMP-gzGzoHsz
+#          appKey: 7WsfQY6CM52MhX2BeF9XcOyN
+#          masterKey: LlCowinwbCplX4lxc4QCIl26
+#        xiaomi:
+#          appId: 2882303761517514162
+#          appKey: 5121751475162
+#          appSecret: T8LT/267JdxWRgpK7+1QMg==
+#          package: com.gt.app.gtecard
+#          action: com.gt.app.gtecard.PUSH_RECEIVER
+#        huawei:
+#          appId: 100027033
+#          appSecret: 775dd0b7dc11a2a16bb882a9841735d9
+#          action: com.gt.app.gtecard.PUSH_RECEIVER
+#          appPkgName: com.gt.app.gtecard
+#
+#    - systemId: 5
+#      apns:
+#        topic: cn.ccc680.TVModule
+#        cerpath: apns/caipiao.p12
+#        cerpass: 654321
+#      androids:
+#        leancloud:
+#          action: com.ccc680.lottery.PUSH_RECEIVER
+#          appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
+#          appKey: VUmTpmQgqT2lcALQcdBbNc1f
+#          masterKey: h89SUasqidddXG9nUwmrJ6YB
+#        xiaomi:
+#          appId: 2882303761517620678
+#          appKey: 5581762023678
+#          appSecret: ZYxFh+YqnbJZHP4RdBXfcw==
+#          package: com.ccc680.lottery
+#          action: com.ccc680.lottery.PUSH_RECEIVER
+#        huawei:
+#    - systemId: 6
+#      apns:
+#        topic: sk.guotong.GtOilStorage
+#        cerpath: apns/skapp.p12
+#        cerpass: 123456
+#      androids:
+#        leancloud:
+#          action: com.gt.app.gtskecard.PUSH_RECEIVER
+#          appId: 9ajXYrrbTyOxHu3umHH9ltBr-gzGzoHsz
+#          appKey: VxEdYAxlRyhISJ2WB2WemSSn
+#          masterKey: S02s56PcQNQOUPYeGbCmS6kK
+#        xiaomi:
+#          appId: 2882303761517812854
+#          appKey: 5201781214854
+#          appSecret: HZEppWHURGgtyzSdKM477A==
+#          package: com.gt.app.gtskecard
+#          action: com.gt.app.gtskecard.PUSH_RECEIVER
+#        huawei:
+#          appId: 100304015
+#          appSecret: cc58e0bb39da1fb1254809967aea2ca9
+#          action: com.gt.app.gtskecard.PUSH_RECEIVER
+#          appPkgName: com.gt.app.gtskecard
+    - systemId: 7
       apns:
         topic: sk.guotong.GtOilStorage
         cerpath: apns/skapp.p12
@@ -55,17 +77,17 @@ jaguar:
           appKey: VxEdYAxlRyhISJ2WB2WemSSn
           masterKey: S02s56PcQNQOUPYeGbCmS6kK
         xiaomi:
-          appId: 2882303761517812854
-          appKey: 5201781214854
-          appSecret: HZEppWHURGgtyzSdKM477A==
-          package: com.gt.app.gtskecard
+          appId: 2882303761518296523
+          appKey: 5981829636523
+          appSecret: 1wIIQW7poi3hIno72dlDcQ==
+          package: com.petroun.vstore
           action: com.gt.app.gtskecard.PUSH_RECEIVER
         huawei:
-          appId: 100304015
-          appSecret: cc58e0bb39da1fb1254809967aea2ca9
+          appId: 101547405
+          appSecret: 2d886736ad3cb7d6a6b22109e5c7be1a7553224dfa1f403c225d5d83f632555c
           action: com.gt.app.gtskecard.PUSH_RECEIVER
-          appPkgName: com.gt.app.gtskecard
-
+          appPkgName: com.petroun.vstore
+          version: "4"
 
 logging:
   level: debug
@@ -73,8 +95,8 @@ logging:
 spring:
   redis:
     database: 9
-    host: "127.0.0.1"
-    port: 6379
+    host: "106.54.71.192"
+    port: 16379
     timeout: 5000
     pool:
       max-active: 64
@@ -82,7 +104,8 @@ spring:
       max-wait: -1
   data:
     mongodb:
-      uri: "mongodb://201.201.201.174:27017/Jaguar"
+#      uri: "mongodb://201.201.201.174:27017/Jaguar"
+      uri: "mongodb://127.0.0.1:27017/Jaguar"
 
 
 
