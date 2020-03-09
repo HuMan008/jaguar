@@ -23,16 +23,18 @@ import com.iusworks.jaguar.provider.push.PushDataHelper;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Notification;
-import com.xiaomi.xmpush.server.Constants;
-import com.xiaomi.xmpush.server.Message;
-import com.xiaomi.xmpush.server.Sender;
+import com.iusworks.jaguar.tools.NotifyIDUtils;
+import com.xiaomi.xmpush.server.*;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import java.util.Map;
 @Component
 public class MiPush implements Pushable {
 
+    private static Logger logger = LoggerFactory.getLogger(MiPush.class);
     @Autowired
     private PushProperties pushProperties;
 
@@ -47,8 +50,6 @@ public class MiPush implements Pushable {
     public void construct() {
         Constants.useOfficial();
     }
-
-    private static Logger logger = LoggerFactory.getLogger(MiPush.class);
 
     @Override
     public boolean isSystemLevelSupport(Map<String, String> deviceInfo) {
@@ -80,7 +81,7 @@ public class MiPush implements Pushable {
 
 
         boolean passThrough = !isSystemLevelSupport(device.getInfos());
-        Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), passThrough);
+        Message message = buildMessage(notification, notifyId, mi, passThrough);
         Sender sender = new Sender(mi.get("appSecret"));
 
         try {
@@ -89,10 +90,13 @@ public class MiPush implements Pushable {
                 logger.error("Device:{} for xiaomi voucher not found");
                 return false;
             }
-            sender.send(message, dpv.getVoucher(), 3);
+            Result r = sender.send(message, dpv.getVoucher(), 3);
+            logger.debug("{}", r.toString());
         } catch (Exception ex) {
             logger.error("{}", ex);
+
         }
+
 
         return true;
     }
@@ -134,12 +138,12 @@ public class MiPush implements Pushable {
             }
 
             if (voucherList.size() > 0) {
-                Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), false);
+                Message message = buildMessage(notification, notifyId, mi, false);
                 sender.send(message, voucherList, 3);
             }
 
             if (voucherListForPassThrough.size() > 0) {
-                Message message = buildMessage(notification, notifyId, mi.get("package"), mi.get("action"), true);
+                Message message = buildMessage(notification, notifyId, mi, true);
                 sender.send(message, voucherListForPassThrough, 3);
             }
 
@@ -185,20 +189,33 @@ public class MiPush implements Pushable {
     }
 
 
-    private Message buildMessage(Notification notification, String notifyId, String packageName, String appAction,
+    private Message buildMessage(Notification notification, String notifyId, Map<String, String> mi,
                                  boolean passThrough) {
+        notification.getExt().put("notifyId",String.valueOf(NotifyIDUtils.generatorID(notifyId)));
+        notification.getExt().put("notifyIdStr",notifyId);
+        String packageName = mi.get("package");
+        String appAction = mi.get("action");
         Message.Builder builder = new Message.Builder();
         builder.title(notification.getTitle());
         builder.description(notification.getAlert());
         builder.restrictedPackageName(packageName);
-        builder.notifyId(notifyId.hashCode());
+        builder.notifyId(NotifyIDUtils.generatorID(notifyId));
         builder.payload(PushDataHelper.jsonStringData(notification, appAction));
 
         if (passThrough) {
             builder.passThrough(1);
-//            logger.info("Pass Throught=============");
+            //            logger.info("Pass Throught=============");
         } else {
             builder.extra(Constants.EXTRA_PARAM_NOTIFY_FOREGROUND, "0");
+            String channelId="";
+            if(notification.getExt().containsKey("channelId")){
+                channelId = notification.getExt().get("channelId");
+            }else{
+                channelId =getChannelId(notification,mi);
+            }
+            if(org.apache.commons.lang3.StringUtils.isNotEmpty(channelId)){
+                builder.extra(Constants.PARAM_CHANNEL_ID,channelId);
+            }
             builder.passThrough(0);
         }
 
@@ -211,4 +228,41 @@ public class MiPush implements Pushable {
         return builder.build();
     }
 
+
+    /**
+     * 取channel_ID ，按名字取 如果取不到就返回空格
+     * 名字不匹配 取第一个
+     * @param notification
+     * @param mi
+     * @return
+     */
+    private String getChannelId(Notification notification,Map<String,String> mi){
+        ChannelHelper channelHelper = new ChannelHelper(mi.get("appSecret"));
+        String channelId = "";
+        try {
+            Result result = channelHelper.getChannelList(1);
+            if (result.getErrorCode().getValue() == 0) {
+                JSONObject jo = result.getData();
+                JSONArray ja = (JSONArray) jo.get("list");
+                for (int i = 0; i < ja.size(); i++) {
+                    JSONObject joo = (JSONObject) ja.get(i);
+                    if (notification.getTitle().equals(joo.get(Constants.PARAM_CHANNEL_NAME))) {
+                        return (String) joo.get(Constants.PARAM_CHANNEL_ID);
+                    }
+                }
+                if (org.apache.commons.lang3.StringUtils.isEmpty(channelId)) {
+                    JSONArray JA = ((JSONArray) result.getData().get("list"));
+                    if (JA.size() == 0) {
+                        logger.error("Mi Push Server haven't PushConfig");
+                        return "";
+                    } else {
+                        return  (String) ((JSONObject) JA.get(0)).get(Constants.PARAM_CHANNEL_ID);
+                    }
+                }
+            }
+        } catch (IOException io) {
+            logger.error("{}", io);
+        }
+        return  "";
+    }
 }

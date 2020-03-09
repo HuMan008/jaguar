@@ -58,6 +58,7 @@ public class HuaweiPush implements Pushable {
     }
 
     @Override
+    @SuppressWarnings("all")
     public void batchPush(Notification notification, List<Device> deviceList, String notifyId) {
         List<Device> passThroughLists = new ArrayList<>();
         List<Device> systemLists = new ArrayList<>();
@@ -96,7 +97,7 @@ public class HuaweiPush implements Pushable {
 
         Map<String, String> hwProperties = HuaweiHelper.huaweiProperties(pushProperties, device.getSid());
 
-        String deviceListString = deviceTokenListString(deviceList);
+        String deviceListString =HuaweiHelper.deviceTokenListString(deviceList);
         String current = String.valueOf(Instant.now().getEpochSecond());
         Map<String, Object> payload = payloadForNotification(notification, hwProperties.get("action")
                 , hwProperties.get("appPkgName"), passThrough);
@@ -148,21 +149,10 @@ public class HuaweiPush implements Pushable {
         return payload;
     }
 
-    private String deviceTokenListString(List<Device> deviceList) {
-        StringBuilder deviceTokenListBuilder = new StringBuilder();
-        deviceTokenListBuilder.append("[");
-        deviceList.forEach((d) -> {
-            deviceTokenListBuilder.append("\"");
-            deviceTokenListBuilder.append(huaweiVoucher(d));
-            deviceTokenListBuilder.append("\",");
-        });
 
-        deviceTokenListBuilder.deleteCharAt(deviceTokenListBuilder.length() - 1);
-        deviceTokenListBuilder.append("]");
-        return deviceTokenListBuilder.toString();
-    }
 
     @Override
+    @SuppressWarnings("all")
     public boolean isSystemLevelSupport(Map<String, String> deviceInfo) {
         if (deviceInfo == null) {
             return false;
@@ -188,19 +178,6 @@ public class HuaweiPush implements Pushable {
         return PushProviderEnum.Huawei;
     }
 
-    private static String huaweiVoucher(Device device) {
-        Map<String, DevicePlatformVoucher> dvmap = device.getDpv();
-        if (dvmap == null) {
-            return null;
-        }
-
-        DevicePlatformVoucher dpv = dvmap.get(PushProviderEnum.Huawei.getDpvKey());
-        if (dpv == null) {
-            return null;
-        }
-
-        return dpv.getVoucher();
-    }
 
 
     class HPS {

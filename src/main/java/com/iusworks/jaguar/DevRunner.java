@@ -18,9 +18,11 @@ package com.iusworks.jaguar;
 import com.iusworks.jaguar.dao.DeviceDAO;
 import com.iusworks.jaguar.provider.push.Dispatcher;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
+import com.iusworks.jaguar.provider.push.huawei.Huawei4Push;
 import com.iusworks.jaguar.provider.push.huawei.HuaweiPush;
 import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
 import com.iusworks.jaguar.thrift.*;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +36,18 @@ public class DevRunner {
 
     private static Logger logger = LoggerFactory.getLogger(DevRunner.class);
 
-//    @Autowired
-//    private LeanCloudPush leanCloudPush;
-//
-//    @Autowired
-//    private NotificationDAO notificationDAO;
-//
-//    @Autowired
-//    private NotificationService notificationService;
-//
-//    @Autowired
-//    private PushProperties pushProperties;
+
+    //    @Autowired
+    //    private LeanCloudPush leanCloudPush;
+    //
+    //    @Autowired
+    //    private NotificationDAO notificationDAO;
+    //
+    //    @Autowired
+    //    private NotificationService notificationService;
+    //
+    //    @Autowired
+    //    private PushProperties pushProperties;
 
     @Autowired
     private DirectClient directClient;
@@ -60,6 +63,8 @@ public class DevRunner {
 
     @Autowired
     private HuaweiPush huaweiPush;
+
+    private Huawei4Push huawei4Push;
 
     //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void dodododo() {
@@ -90,7 +95,7 @@ public class DevRunner {
 
     }
 
-//    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void testHuawei() {
         Notification notification = new Notification();
         notification.setAction("abc");
@@ -101,7 +106,7 @@ public class DevRunner {
         notification.putToExt("notifyId", "1222");
 
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
-        device.setSid((short) 4);
+        device.setSid((short) 7);
         com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
         hw.setVoucher("0866938023933488300001187300CN01");
         hw.setState(0);
@@ -110,10 +115,10 @@ public class DevRunner {
 
         Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
         dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
-
+/*
         Map<String, String> infos = new HashMap<>();
         infos.put("F", "honor");
-        device.setInfos(infos);
+        device.setInfos(infos);*/
 
         device.setDpv(dpv);
 
@@ -205,7 +210,8 @@ public class DevRunner {
     /*
     private void noti_ios() {
         Notification notification = genNotification();
-        String token = TokenUtil.sanitizeTokenString("<9eb026b3 7d7f6a30 8f74d1eb ec02f572 3045e99e b522f2e3 0caabbfc 288a728a>");
+        String token = TokenUtil.sanitizeTokenString("<9eb026b3 7d7f6a30 8f74d1eb ec02f572 3045e99e b522f2e3 0caabbfc
+         288a728a>");
         logger.info("{}", token);
         apns.push(notification, token);
     }
@@ -216,6 +222,74 @@ public class DevRunner {
         leanCloudPush.push(notification, "12345678-4312-1234-1234-1234567890ab");
     }
 */
+
+//     @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    public void shms4test() {
+
+        com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
+        device.setSid((short) 7);
+        com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
+        hw.setVoucher("AHzkDJO53BtBqLbrU5Np7pjWKzCICpwBEUsQcqlbegEVeeKrExWgYLDo8ZSRWF-YaVl" +
+                "-jd2IyEUR2VjTHmLheiQ29fmsJdAef_3dVb2xNVQ2y24NEl28xMvIwd4s9XeYTw");
+        hw.setState(0);
+        hw.setReqTime(new Date());
+        hw.setUpdatedAt(hw.getReqTime());
+
+        Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
+        dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
+        //        Map<String, String> infos = new HashMap<>();
+        //        infos.put("F", "honor");
+        //        device.setInfos(infos);
+
+
+        device.setDpv(dpv);
+        String aa = new ObjectId().toHexString();
+        System.out.println(aa);
+        Notification notification = genNotification();
+        Map<String, String> ext = new HashMap<>();
+        ext.put("channelId", "vstore_1");
+        ext.put("channelName", "订单结果通知");
+        ext.put("channelDescription", "加油消费、油卡充值订单结果通知");
+        ext.put("notifyId", aa);
+        ext.put("intent",
+                "#Intent;launchFlags=0x10008000;component=com.petroun.vstore/com.gotoil.home.view.activity" +
+                        ".WelComeActivity;S.notifyIdStr=%s;end");
+
+
+        notification.setExt(ext);
+        huawei4Push.push(notification, device, aa);
+
+    }
+     @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    public void sxiaomTest() {
+        Notification notification = genNotification();
+
+        com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
+        device.setSid((short) 7);
+        com.iusworks.jaguar.domain.DevicePlatformVoucher mi = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
+        mi.setVoucher("TmI9byU6d0L8YINbyaw+nv6Mh9116ahxsKwlaHmTgXMDQsGzvL7ZnKDIgR6I1TMf");
+        mi.setState(0);
+        mi.setReqTime(new Date());
+        mi.setUpdatedAt(mi.getReqTime());
+
+        Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
+        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), mi);
+        device.setDpv(dpv);
+               /*
+               Map<String, String> infos = new HashMap<>();
+               infos.put("F", "xiaomi");
+               device.setInfos(infos);*/
+
+        String aa = new ObjectId().toHexString();
+        Map<String, String> ext = new HashMap<>();
+        ext.put("channelId", "vstore_1");
+        ext.put("channelName", "a订单结果通知");
+        ext.put("channelDescription", "a加油消费、油卡充值订单结果通知");
+        ext.put("notifyId", aa);
+        notification.setExt(ext);
+        System.out.println(aa);
+        miPush.push(notification, device, aa);
+    }
 }
 
 

@@ -16,9 +16,14 @@ package com.iusworks.jaguar.provider.push.huawei;
 
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
+import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.domain.DevicePlatformVoucher;
+import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 
 public class HuaweiHelper {
@@ -39,5 +44,43 @@ public class HuaweiHelper {
         }
 
         return androids.get("huawei");
+    }
+
+    public static String version(PushProperties pushProperties,int systemId){
+         Map<String,String>   map =huaweiProperties(pushProperties,systemId);
+         return StringUtils.isEmpty(map) ? "" : map.containsKey("version")? map.get("version") : "";
+
+    }
+
+    public static String deviceTokenListString(List<Device> deviceList) {
+        StringBuilder deviceTokenListBuilder = new StringBuilder();
+        deviceTokenListBuilder.append("[");
+        deviceList.forEach((d) -> {
+            String token  =huaweiVoucher(d);
+            if(!StringUtils.isEmpty(token)){
+
+                deviceTokenListBuilder.append("\"");
+                deviceTokenListBuilder.append(token);
+                deviceTokenListBuilder.append("\",");
+            }
+
+        });
+        deviceTokenListBuilder.deleteCharAt(deviceTokenListBuilder.length() - 1);
+        deviceTokenListBuilder.append("]");
+        return deviceTokenListBuilder.toString();
+    }
+
+    public static String huaweiVoucher(Device device) {
+        Map<String, DevicePlatformVoucher> dvmap = device.getDpv();
+        if (dvmap == null) {
+            return null;
+        }
+
+        DevicePlatformVoucher dpv = dvmap.get(PushProviderEnum.Huawei.getDpvKey());
+        if (dpv == null) {
+            return null;
+        }
+
+        return dpv.getVoucher();
     }
 }

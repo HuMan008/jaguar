@@ -39,6 +39,7 @@ public class HuaweiAccessToken {
     private static final Logger logger = LoggerFactory.getLogger(HuaweiAccessToken.class);
 
     private static final String ACCESS_TOKEN_URL = "https://login.vmall.com/oauth2/token";
+    private static final String ACCESS_TOKEN_URL_v2 = "https://oauth-login.cloud.huawei.com/oauth2/v2/token";
 
     private static Map<Integer, Token> tokens = new HashMap<>();
 
@@ -119,8 +120,15 @@ public class HuaweiAccessToken {
         params.put("client_id", huaweiProperties.get("appId"));
         params.put("client_secret", huaweiProperties.get("appSecret"));
         try {
-            HttpResponse<JsonNode> jsonNodeHttpResponse = Unirest.post(ACCESS_TOKEN_URL).
-                    header("Content-Type", "application/x-www-form-urlencoded  ").fields(params).asJson();
+
+            HttpResponse<JsonNode> jsonNodeHttpResponse =  null;
+            if(StringUtils.isEmpty(HuaweiHelper.version(pushProperties,systemId))){
+                jsonNodeHttpResponse =  Unirest.post(ACCESS_TOKEN_URL).
+                        header("Content-Type", "application/x-www-form-urlencoded  ").fields(params).asJson();
+            }else{
+                jsonNodeHttpResponse =  Unirest.post(ACCESS_TOKEN_URL_v2).
+                        header("Content-Type", "application/x-www-form-urlencoded  ").fields(params).asJson();
+            }
             if (jsonNodeHttpResponse.getStatus() < 200 || jsonNodeHttpResponse.getStatus() >= 300) {
                 logger.error("{}", jsonNodeHttpResponse.getStatusText());
                 return null;
