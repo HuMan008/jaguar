@@ -115,6 +115,7 @@ public class NotificationService {
             notification.setDatetime((int) Instant.now().getEpochSecond());
         }
         notification.setStoraged(notificationRequest.getNotification().getStoraged());
+        notification.setExt(notificationRequest.getNotification().ext);
         notificationDAO.insert(notification);
 
         return notification;

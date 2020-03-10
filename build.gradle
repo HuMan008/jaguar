@@ -36,6 +36,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-aop')
     compile('org.springframework.boot:spring-boot-starter-data-redis')
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+    compile("org.springframework.boot:spring-boot-starter-test")
 
 
 //	compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:1.1.1")
@@ -58,4 +59,8 @@ dependencies {
 //    runtime('mysql:mysql-connector-java')
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.3'
+//    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.3'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.3'
+
 }

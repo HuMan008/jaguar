@@ -219,12 +219,6 @@ public class MiPush implements Pushable {
             builder.passThrough(0);
         }
 
-        /*
-
-        if (notification.getExtSize() > 0) {
-            notification.getExt().forEach((k, v) -> builder.extra(k, v));
-        }
-        */
         return builder.build();
     }
 

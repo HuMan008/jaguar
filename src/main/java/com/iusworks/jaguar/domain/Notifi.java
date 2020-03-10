@@ -18,6 +18,8 @@ package com.iusworks.jaguar.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Map;
+
 @Document(collection = "jag_notification")
 public class Notifi {
 
@@ -41,6 +43,8 @@ public class Notifi {
     private Integer recvAt;
 
     private Integer recvChan;
+
+    private Map<String,String> ext;
 
     public String getId() {
         return id;
@@ -122,20 +126,31 @@ public class Notifi {
         this.recvChan = recvChan;
     }
 
+
+    public Map<String, String> getExt() {
+        return ext;
+    }
+
+    public void setExt(Map<String, String> ext) {
+        this.ext = ext;
+    }
+
     @Override
     public String toString() {
-        return "Notifi{" +
-                "id='" + id + '\'' +
-                ", sid=" + sid +
-                ", uid='" + uid + '\'' +
-                ", datetime=" + datetime +
-                ", action='" + action + '\'' +
-                ", title='" + title + '\'' +
-                ", alert='" + alert + '\'' +
-                ", storaged='" + storaged + '\'' +
-                ", recvAt=" + recvAt +
-                ", recvChan=" + recvChan +
-                '}';
+        final StringBuilder sb = new StringBuilder("Notifi{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", sid=").append(sid);
+        sb.append(", uid='").append(uid).append('\'');
+        sb.append(", datetime=").append(datetime);
+        sb.append(", action='").append(action).append('\'');
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", alert='").append(alert).append('\'');
+        sb.append(", storaged='").append(storaged).append('\'');
+        sb.append(", recvAt=").append(recvAt);
+        sb.append(", recvChan=").append(recvChan);
+        sb.append(", ext=").append(ext);
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override

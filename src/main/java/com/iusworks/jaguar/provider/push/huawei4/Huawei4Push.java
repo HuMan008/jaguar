@@ -4,21 +4,22 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
  *
- * jaguar com.iusworks.jaguar.provider.push.huawei.HuaWei4Push
+ * jaguar com.iusworks.jaguar.provider.push.huawei4.Huawei4Push
  *
  * cluries <cluries@me.com>,  三月 2020
  *
- * LastModified: 20-3-6 下午5:49
+ * LastModified: 20-3-10 下午3:44
  *
  */
 
-package com.iusworks.jaguar.provider.push.huawei;
+package com.iusworks.jaguar.provider.push.huawei4;
 
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.helper.ObjectHelper;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
+
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.tools.NotifyIDUtils;
 import com.mashape.unirest.http.HttpResponse;
@@ -49,7 +50,7 @@ public class Huawei4Push implements Pushable {
     //hms core 4.0版本
     private static final String PUSHURLV4 = "https://push-api.cloud.huawei.com/v1/%s/messages:send";
     @Autowired
-    private HuaweiAccessToken accessToken;
+    private Huawei4AccessToken accessToken4;
     @Autowired
     private PushProperties pushProperties;
 
@@ -93,17 +94,17 @@ public class Huawei4Push implements Pushable {
         Device device = deviceList.get(0);
 
 
-        String token = accessToken.tokenForSystemId(device.getSid().intValue());
+        String token = accessToken4.tokenForSystemId(device.getSid().intValue());
         if (StringUtils.isEmpty(token)) {
             logger.error("empty huawei token for systemId:{}", device.getSid());
             return;
         }
 
-        Map<String, String> hwProperties = HuaweiHelper.huaweiProperties(pushProperties, device.getSid());
+        Map<String, String> hwProperties = Huawei4Helper.huaweiProperties(pushProperties, device.getSid());
 
         //        String[] tokenArray = deviceList.stream().map(d -> huaweiVoucher(d)).toArray(String[]::new);
         List<String> tokenListStr =
-                deviceList.stream().map(d -> HuaweiHelper.huaweiVoucher(d)).collect(Collectors.toList());
+                deviceList.stream().map(d -> Huawei4Helper.huaweiVoucher(d)).collect(Collectors.toList());
 
         String authorization = "Bearer " + token;
 
@@ -125,8 +126,16 @@ public class Huawei4Push implements Pushable {
 
     private Message buildMsg(Notification notification, List<String> tokens, Map<String, String> huaweiProperties,
                              boolean passThrough, String notifyId) {
-        notification.getExt().put("notifyId", String.valueOf(NotifyIDUtils.generatorID(notifyId)));
+        int notifyIdIntValue =  NotifyIDUtils.generatorID(notifyId);
+        notification.getExt().put("notifyId", String.valueOf(notifyIdIntValue));
         notification.getExt().put("notifyIdStr", notifyId);
+        String  intentStr =huaweiProperties.get("intent")  ;
+        if(intentStr.indexOf("notifyId")!=-1){
+            intentStr = String.format(intentStr,notifyIdIntValue );
+        }else if(intentStr.indexOf("notifyIdStr") !=-1){
+            intentStr = String.format(intentStr,notifyId );
+        }
+        notification.getExt().put("intent" ,intentStr);
         Message message = new Message();
         message.setToken(tokens);
         if (passThrough) {
@@ -171,8 +180,7 @@ public class Huawei4Push implements Pushable {
             ClickAction clickAction = new ClickAction();
             clickAction.setType(1);
             if (notification.getExt().containsKey("intent")) {
-                clickAction.setIntent(String.format(notification.getExt().get("intent"), notification.getExt().get(
-                        "notifyIdStr")));
+                clickAction.setIntent(intentStr);
             } else {
                 clickAction.setAction(huaweiProperties.get("action"));
             }

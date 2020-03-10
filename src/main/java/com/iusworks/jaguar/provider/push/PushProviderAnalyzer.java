@@ -19,6 +19,7 @@ import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.provider.push.apple.ApplePush;
 import com.iusworks.jaguar.provider.push.getui.GetuiPush;
 import com.iusworks.jaguar.provider.push.huawei.HuaweiPush;
+import com.iusworks.jaguar.provider.push.huawei4.Huawei4Push;
 import com.iusworks.jaguar.provider.push.leancloud.LeanCloudPush;
 import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
 import com.iusworks.jaguar.thrift.DeviceType;
@@ -46,6 +47,8 @@ public class PushProviderAnalyzer {
     private HuaweiPush huaweiPush;
 
     @Autowired
+    private Huawei4Push huawei4Push;
+    @Autowired
     private GetuiPush getuiPush;
 
     private List<Pushable> prividers = new ArrayList();
@@ -59,10 +62,13 @@ public class PushProviderAnalyzer {
         prividers.add(miPush);
         prividers.add(leanCloudPush);
         prividers.add(huaweiPush);
+        prividers.add(huawei4Push);
 
         androidProviders.add(miPush);
         androidProviders.add(huaweiPush);
+        androidProviders.add(huawei4Push);
         androidProviders.add(leanCloudPush);
+
     }
 
     public Pushable pusherFromProvider(PushProviderEnum providerEnum) {
@@ -71,6 +77,7 @@ public class PushProviderAnalyzer {
         if (providerEnum == PushProviderEnum.Huawei) return huaweiPush;
         if (providerEnum == PushProviderEnum.Leancloud) return leanCloudPush;
         if (providerEnum == PushProviderEnum.Getui) return getuiPush;
+        if(providerEnum == PushProviderEnum.Huawei4) return huawei4Push;
 
         return null;
     }

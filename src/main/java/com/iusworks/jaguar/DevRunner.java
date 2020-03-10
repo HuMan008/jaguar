@@ -18,8 +18,8 @@ package com.iusworks.jaguar;
 import com.iusworks.jaguar.dao.DeviceDAO;
 import com.iusworks.jaguar.provider.push.Dispatcher;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
-import com.iusworks.jaguar.provider.push.huawei.Huawei4Push;
 import com.iusworks.jaguar.provider.push.huawei.HuaweiPush;
+import com.iusworks.jaguar.provider.push.huawei4.Huawei4Push;
 import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
 import com.iusworks.jaguar.thrift.*;
 import org.bson.types.ObjectId;
@@ -64,6 +64,7 @@ public class DevRunner {
     @Autowired
     private HuaweiPush huaweiPush;
 
+    @Autowired
     private Huawei4Push huawei4Push;
 
     //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
@@ -95,8 +96,10 @@ public class DevRunner {
 
     }
 
-    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+        @Scheduled(initialDelay = 1000*30, fixedRate = 10000000)
     public void testHuawei() {
+        //
+            System.out.println("huaweipush 老的");
         Notification notification = new Notification();
         notification.setAction("abc");
         notification.setAlert("测试alert");
@@ -106,19 +109,19 @@ public class DevRunner {
         notification.putToExt("notifyId", "1222");
 
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
-        device.setSid((short) 7);
+        device.setSid((short) 6);
         com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
-        hw.setVoucher("0866938023933488300001187300CN01");
+        hw.setVoucher("AHzkDJO53BtBqLbrU5Np7pjWKzCICpwBEUsQcqlbegEVeeKrExWgYLDo8ZSRWF-YaVl" +
+                "-jd2IyEUR2VjTHmLheiQ29fmsJdAef_3dVb2xNVQ2y24NEl28xMvIwd4s9XeYTw");
         hw.setState(0);
         hw.setReqTime(new Date());
         hw.setUpdatedAt(hw.getReqTime());
 
         Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
         dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
-/*
         Map<String, String> infos = new HashMap<>();
         infos.put("F", "honor");
-        device.setInfos(infos);*/
+        device.setInfos(infos);
 
         device.setDpv(dpv);
 
@@ -223,9 +226,9 @@ public class DevRunner {
     }
 */
 
-//     @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void shms4test() {
-
+        System.out.println("huaweipush 新的");
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
         device.setSid((short) 7);
         com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
@@ -237,10 +240,10 @@ public class DevRunner {
 
         Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
         dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
-        //        Map<String, String> infos = new HashMap<>();
-        //        infos.put("F", "honor");
-        //        device.setInfos(infos);
 
+        Map<String, String> infos = new HashMap<>();
+        infos.put("F", "honor");
+//        device.setInfos(infos);
 
         device.setDpv(dpv);
         String aa = new ObjectId().toHexString();
@@ -252,15 +255,15 @@ public class DevRunner {
         ext.put("channelDescription", "加油消费、油卡充值订单结果通知");
         ext.put("notifyId", aa);
         ext.put("intent",
-                "#Intent;launchFlags=0x10008000;component=com.petroun.vstore/com.gotoil.home.view.activity" +
-                        ".WelComeActivity;S.notifyIdStr=%s;end");
+                "#Intent;launchFlags=0x10008000;component=com.petroun.vstore/com.gotoil.home.view.activity.WelComeActivity;S.notifyIdStr=%s;end");
 
 
         notification.setExt(ext);
         huawei4Push.push(notification, device, aa);
 
     }
-     @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+
+    //     @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void sxiaomTest() {
         Notification notification = genNotification();
 
@@ -275,10 +278,9 @@ public class DevRunner {
         Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
         dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), mi);
         device.setDpv(dpv);
-               /*
-               Map<String, String> infos = new HashMap<>();
-               infos.put("F", "xiaomi");
-               device.setInfos(infos);*/
+        Map<String, String> infos = new HashMap<>();
+        infos.put("F", "xiaomi");
+        device.setInfos(infos);
 
         String aa = new ObjectId().toHexString();
         Map<String, String> ext = new HashMap<>();

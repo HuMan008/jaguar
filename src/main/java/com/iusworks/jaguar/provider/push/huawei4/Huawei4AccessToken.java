@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2017.  Iusworks, Inc - All Rights Reserved
+ * Copyright (C) 2020.  Iusworks, Inc - All Rights Reserved
  *
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Proprietary and confidential
  *
- * Jaguar com.iusworks.jaguar.provider.push.huawei.HuaweiAccessToken
+ * jaguar com.iusworks.jaguar.provider.push.huawei4.HuaweiAccessToken
  *
- * cluries <cluries@me.com>,  December 2017
+ * cluries <cluries@me.com>,  三月 2020
  *
- * LastModified: 12/25/17 9:50 AM
+ * LastModified: 20-3-9 上午9:57
  *
  */
 
-package com.iusworks.jaguar.provider.push.huawei;
+package com.iusworks.jaguar.provider.push.huawei4;
 
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.helper.ObjectHelper;
@@ -34,15 +34,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class HuaweiAccessToken {
+public class Huawei4AccessToken {
 
-    private static final Logger logger = LoggerFactory.getLogger(HuaweiAccessToken.class);
+    private static final Logger logger = LoggerFactory.getLogger(Huawei4AccessToken.class);
 
-    private static final String ACCESS_TOKEN_URL = "https://login.vmall.com/oauth2/token";
+    private static final String ACCESS_TOKEN_URL_v2 = "https://oauth-login.cloud.huawei.com/oauth2/v2/token";
 
     private static Map<Integer, Token> tokens = new HashMap<>();
 
-    private static final String HuaweiTokensCacheKeyInRedis = "HuaweiTokens";
+    private static final String HuaweiTokensCacheKeyInRedis = "Huawei4Tokens";
 
     @Autowired
     private PushProperties pushProperties;
@@ -72,19 +72,18 @@ public class HuaweiAccessToken {
     }
 
 
-    @Scheduled(initialDelay = 2000, fixedRate = 60000)
+    @Scheduled(initialDelay = 2000, fixedDelay = 15* 10000)
     public void updateTokenJob() {
 
         pushProperties.getPushs().forEach((p) -> {
-            Map<String, String> hw = p.getAndroids().get("huawei");
+            Map<String, String> hw = p.getAndroids().get("huawei4");
             if (null == hw || hw.size() < 1) {
                 return;
             }
-
             Integer sysId = p.getSystemId();
             Token token = tokens.get(sysId);
 
-            if (token == null || token.getExpiresAt() - 300 <= Instant.now().getEpochSecond()) {
+            if (token == null || token.getExpiresAt() - 80 <= Instant.now().getEpochSecond()) {
                 logger.info("Need grant token for system:{}", sysId);
                 token = grant(sysId);
                 logger.info("new access token for systemid:{} value:{}", sysId, token);
@@ -109,7 +108,7 @@ public class HuaweiAccessToken {
 
 
     private Token grant(int systemId) {
-        Map<String, String> huaweiProperties = HuaweiHelper.huaweiProperties(pushProperties, systemId);
+        Map<String, String> huaweiProperties = Huawei4Helper.huaweiProperties(pushProperties, systemId);
         if (null == huaweiProperties || huaweiProperties.size() < 1) {
             return null;
         }
@@ -119,7 +118,8 @@ public class HuaweiAccessToken {
         params.put("client_id", huaweiProperties.get("appId"));
         params.put("client_secret", huaweiProperties.get("appSecret"));
         try {
-            HttpResponse<JsonNode> jsonNodeHttpResponse = Unirest.post(ACCESS_TOKEN_URL).
+
+            HttpResponse<JsonNode> jsonNodeHttpResponse = jsonNodeHttpResponse =  Unirest.post(ACCESS_TOKEN_URL_v2).
                     header("Content-Type", "application/x-www-form-urlencoded  ").fields(params).asJson();
             if (jsonNodeHttpResponse.getStatus() < 200 || jsonNodeHttpResponse.getStatus() >= 300) {
                 logger.error("{}", jsonNodeHttpResponse.getStatusText());

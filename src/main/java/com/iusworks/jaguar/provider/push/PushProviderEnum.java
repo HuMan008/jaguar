@@ -16,7 +16,7 @@ package com.iusworks.jaguar.provider.push;
 
 public enum PushProviderEnum {
 
-    Apple(1, "ap"), Xiaomi(2, "mi"), Huawei(3, "hw"), Leancloud(50, "lc"), Getui(51, "gt");
+    Apple(1, "ap"), Xiaomi(2, "mi"), Huawei(3, "hw"), Leancloud(50, "lc"), Getui(51, "gt"),Huawei4(31,"hw");
 
     private Integer code;
 
@@ -54,6 +54,10 @@ public enum PushProviderEnum {
 
         if (code == Getui.code) {
             return Getui;
+        }
+
+        if(code.intValue() == Huawei4.code){
+            return Huawei4;
         }
 
         return null;
