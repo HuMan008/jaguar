@@ -18,6 +18,7 @@ package com.iusworks.jaguar.dao;
 import com.iusworks.jaguar.domain.Notifi;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,4 +34,12 @@ public class NotificationDAO extends GenericMongoDAO<Notifi> {
         Query query = Query.query(criteria);
         return mongoTemplate.find(query, Notifi.class);
     }
+
+   /* public int updatePushResult(String notifyId,int result){
+        Criteria criteria = Criteria.where("id").is(notifyId);
+        Query query = Query.query(criteria);
+        Update update = new Update();
+        update.set("status",result);
+        return mongoTemplate.updateMulti(query,update,Notifi.class).getN();
+    }*/
 }

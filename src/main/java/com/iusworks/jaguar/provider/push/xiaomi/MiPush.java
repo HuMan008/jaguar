@@ -19,6 +19,7 @@ import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.domain.DevicePlatformVoucher;
+import com.iusworks.jaguar.helper.ObjectHelper;
 import com.iusworks.jaguar.provider.push.PushDataHelper;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
@@ -92,17 +93,16 @@ public class MiPush implements Pushable {
             }
             Result r = sender.send(message, dpv.getVoucher(), 3);
             logger.debug("{}", r.toString());
+
         } catch (Exception ex) {
             logger.error("{}", ex);
-
         }
-
 
         return true;
     }
 
     @Override
-    public void batchPush(Notification notification, List<Device> deviceList, String notifyId) {
+    public void  batchPush(Notification notification, List<Device> deviceList, String notifyId) {
 
         if (deviceList.size() < 1) {
             logger.error("empty device list");
@@ -139,13 +139,16 @@ public class MiPush implements Pushable {
 
             if (voucherList.size() > 0) {
                 Message message = buildMessage(notification, notifyId, mi, false);
-                sender.send(message, voucherList, 3);
+                Result result = sender.send(message, voucherList, 3);
+               logger.error("mipush: {}", ObjectHelper.jsonString(result));
             }
 
             if (voucherListForPassThrough.size() > 0) {
                 Message message = buildMessage(notification, notifyId, mi, true);
-                sender.send(message, voucherListForPassThrough, 3);
+                Result result  = sender.send(message, voucherListForPassThrough, 3);
+                logger.error("mipush: {}", ObjectHelper.jsonString(result));
             }
+
 
         } catch (Exception ex) {
             logger.error("{}", ex);

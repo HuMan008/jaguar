@@ -101,6 +101,10 @@ public class PushProviderAnalyzer {
             return getuiPush;
         }
 
+        if(huawei4Push.isSystemLevelSupport(inf)){
+            return huawei4Push;
+        }
+
 //        return leanCloudPush;
         return null;
     }

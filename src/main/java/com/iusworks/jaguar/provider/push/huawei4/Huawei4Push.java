@@ -14,6 +14,7 @@
 
 package com.iusworks.jaguar.provider.push.huawei4;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.helper.ObjectHelper;
@@ -25,6 +26,7 @@ import com.iusworks.jaguar.tools.NotifyIDUtils;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,10 +88,11 @@ public class Huawei4Push implements Pushable {
         }
     }
 
-    private void doBatchPush(Notification notification, List<Device> deviceList, String notifyId, boolean passThrough) {
+    private void doBatchPush(Notification notification, List<Device> deviceList, String notifyId,
+                              boolean passThrough) {
 
         if (deviceList.size() < 1) {
-            return;
+            return ;
         }
         Device device = deviceList.get(0);
 
@@ -97,7 +100,7 @@ public class Huawei4Push implements Pushable {
         String token = accessToken4.tokenForSystemId(device.getSid().intValue());
         if (StringUtils.isEmpty(token)) {
             logger.error("empty huawei token for systemId:{}", device.getSid());
-            return;
+            return ;
         }
 
         Map<String, String> hwProperties = Huawei4Helper.huaweiProperties(pushProperties, device.getSid());
@@ -115,25 +118,27 @@ public class Huawei4Push implements Pushable {
         body.put("message", message);
 
         try {
-            HttpResponse<String> response = Unirest.post(String.format(PUSHURLV4, hwProperties.get("appId"))).header(
-                    "Authorization", authorization).header("Content-Type", "application/json;charset=utf-8").body(ObjectHelper.jsonString(body)).asString();
+            HttpResponse<String> response = Unirest.post(String.format(PUSHURLV4, hwProperties.get("appId")))
+                    .header("Authorization", authorization)
+                    .header("Content-Type", "application/json;charset=utf-8")
+                    .body(ObjectHelper.jsonString(body))
+                    .asString();
             logger.debug("{}", response.getBody());
-            logger.debug(ObjectHelper.jsonString(body));
         } catch (UnirestException e) {
             logger.error("{}", e.getMessage());
         }
+
     }
 
     private Message buildMsg(Notification notification, List<String> tokens, Map<String, String> huaweiProperties,
                              boolean passThrough, String notifyId) {
-        int notifyIdIntValue =  NotifyIDUtils.generatorID(notifyId);
-        notification.getExt().put("notifyId", String.valueOf(notifyIdIntValue));
+        int notifyIdIntValue =  NotifyIDUtils.generatorID(notifyId);notification.getExt().put("notifyId", String.valueOf(notifyIdIntValue));
         notification.getExt().put("notifyIdStr", notifyId);
         String  intentStr =huaweiProperties.get("intent")  ;
-        if(intentStr.indexOf("notifyId")!=-1){
-            intentStr = String.format(intentStr,notifyIdIntValue );
-        }else if(intentStr.indexOf("notifyIdStr") !=-1){
+        if(intentStr.indexOf("notifyIdStr") !=-1){
             intentStr = String.format(intentStr,notifyId );
+        }else if(intentStr.indexOf("notifyId")!=-1){
+            intentStr = String.format(intentStr,notifyIdIntValue );
         }
         notification.getExt().put("intent" ,intentStr);
         Message message = new Message();
@@ -217,7 +222,7 @@ public class Huawei4Push implements Pushable {
 
     @Override
     public PushProviderEnum provider() {
-        return PushProviderEnum.Huawei;
+        return PushProviderEnum.Huawei4;
     }
 
     class Message {
