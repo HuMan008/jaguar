@@ -230,12 +230,13 @@ public class DevRunner {
     }
 */
 
-//    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void shms4test() {
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
         device.setSid((short) 7);
         com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
-        hw.setVoucher("AHzkDJO53BtBqLbrU5Np7pjWKzCICpwBEUsQcqlbegEVeeKrExWgYLDo8ZSRWF-YaVl-jd2IyEUR2VjTHmLheiQ29fmsJdAef_3dVb2xNVQ2y24NEl28xMvIwd4s9XeYTw");
+        hw.setVoucher("ALiIIqG5K3iLC2NT6inNmKcQh_VVaX4MA3nhdNXtwt64RUnN5YRIceh5Buy7XGwxCfd_8TMG-e3hRwb" +
+                "-DZ5f5o8lEpxiE9xeOzTx-zsPb37g_v2oxnQGpTIeR5mL19Cf_g");
         hw.setState(0);
         hw.setReqTime(new Date());
         hw.setUpdatedAt(hw.getReqTime());
@@ -245,7 +246,7 @@ public class DevRunner {
 
         Map<String, String> infos = new HashMap<>();
         infos.put("F", "honor");
-//        device.setInfos(infos);
+        device.setInfos(infos);
 
         device.setDpv(dpv);
         String aa = new ObjectId().toHexString();
