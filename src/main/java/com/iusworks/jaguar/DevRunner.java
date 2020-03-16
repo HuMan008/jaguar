@@ -16,14 +16,17 @@
 package com.iusworks.jaguar;
 
 import com.iusworks.jaguar.dao.DeviceDAO;
+import com.iusworks.jaguar.domain.DeviceState;
 import com.iusworks.jaguar.provider.push.Dispatcher;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
+import com.iusworks.jaguar.provider.push.apple.ApplePush;
 import com.iusworks.jaguar.provider.push.huawei.HuaweiPush;
 import com.iusworks.jaguar.provider.push.huawei4.Huawei4Push;
 import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
 import com.iusworks.jaguar.service.NotificationService;
 import com.iusworks.jaguar.thrift.*;
 import org.bson.types.ObjectId;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +70,9 @@ public class DevRunner {
 
     @Autowired
     private Huawei4Push huawei4Push;
+
+    @Autowired
+    private ApplePush applePush;
 
     @Autowired
     private JaguarService.Iface jaguarService;
@@ -230,7 +236,7 @@ public class DevRunner {
     }
 */
 
-    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void shms4test() {
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
         device.setSid((short) 7);
@@ -242,11 +248,13 @@ public class DevRunner {
         hw.setUpdatedAt(hw.getReqTime());
 
         Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
-        dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
+        dpv.put(PushProviderEnum.Huawei4.getDpvKey(), hw);
+        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), hw);
+        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), null);
 
         Map<String, String> infos = new HashMap<>();
         infos.put("F", "honor");
-        device.setInfos(infos);
+        //        device.setInfos(infos);
 
         device.setDpv(dpv);
         String aa = new ObjectId().toHexString();
@@ -296,8 +304,47 @@ public class DevRunner {
         miPush.push(notification, device, aa);
     }
 
+    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    public void testApns() {
+        com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
+        device.setSid((short) 7);
+        com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
+        hw.setVoucher("841d2c83f42fe09a269a24dd27033f27272c7821f32b91f573442873198c2bf2");
+        hw.setState(0);
+        hw.setReqTime(new Date());
+        hw.setUpdatedAt(hw.getReqTime());
+
+        Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
+        dpv.put(PushProviderEnum.Apple.getDpvKey(), hw);
+
+        Map<String, String> infos = new HashMap<>();
+        infos.put("F", "apple");
+        //        device.setInfos(infos);
+
+        device.setState(DeviceState.Normal.getValue());
+        device.setDpv(dpv);
+        String aa = new ObjectId().toHexString();
+        System.out.println(aa);
+        Notification notification = genNotification();
+        //        notification.setEnv(Environment.Prod);
+        notification.setEnv(Environment.Dev);
+        Map<String, String> ext = new HashMap<>();
+        ext.put("channelId", "vstore_1");
+        ext.put("channelName", "a订单结果通知");
+        ext.put("channelDescription", "a加油消费、油卡充值订单结果通知");
+        //        ext.put("notifyId", aa);
+        //        ext.put("intent",
+        //                "#Intent;launchFlags=0x10008000;component=com.petroun.vstore/com.gotoil.home.view.activity
+        // .WelComeActivity;S.notifyIdStr=%s;end");
+
+
+        notification.setExt(ext);
+        applePush.push(notification, device, aa);
+
+    }
 
 
 }
+
 
 

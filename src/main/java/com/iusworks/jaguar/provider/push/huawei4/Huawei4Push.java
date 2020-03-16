@@ -19,11 +19,16 @@ import com.huawei.push.android.AndroidNotification;
 import com.huawei.push.android.ClickAction;
 import com.huawei.push.message.AndroidConfig;
 import com.huawei.push.message.Message;
+import com.huawei.push.messaging.HuaweiApp;
+import com.huawei.push.messaging.HuaweiMessaging;
 import com.huawei.push.model.Importance;
 import com.huawei.push.model.Urgency;
 import com.huawei.push.model.Visibility;
+import com.huawei.push.reponse.SendResponse;
+import com.huawei.push.util.InitAppUtils;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.domain.Device;
+import com.iusworks.jaguar.domain.DevicePlatformVoucher;
 import com.iusworks.jaguar.helper.ObjectHelper;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
@@ -38,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,13 +59,31 @@ import java.util.stream.Collectors;
 @Component
 public class Huawei4Push implements Pushable {
 
+    private static final String ProperitesKey = "huawei4";
+    private static final String ProperitesKey_param_appId = "appId";
+    private static final String ProperitesKey_param_appSecert = "appSecret";
+
     private static final Logger logger = LoggerFactory.getLogger(Huawei4Push.class);
-    //hms core 4.0版本
-    private static final String PUSHURLV4 = "https://push-api.cloud.huawei.com/v1/%s/messages:send";
-    @Autowired
-    private Huawei4AccessToken accessToken4;
+
+
     @Autowired
     private PushProperties pushProperties;
+
+    private Map<Integer, HuaweiApp> huaweiAppMap = new HashMap<>();
+
+
+    @PostConstruct
+    void construct() throws Exception {
+        pushProperties.getPushs().forEach(p -> {
+            if (p.getAndroids().containsKey(ProperitesKey)) {
+                int sid = p.getSystemId();
+                Map<String, String> huawei4Map = p.getAndroids().get(ProperitesKey);
+                HuaweiApp huaweiApp = InitAppUtils.initializeApp(huawei4Map.get(ProperitesKey_param_appId),
+                        huawei4Map.get(ProperitesKey_param_appSecert));
+                huaweiAppMap.put(sid, huaweiApp);
+            }
+        });
+    }
 
 
     @Override
@@ -100,34 +124,24 @@ public class Huawei4Push implements Pushable {
         }
         Device device = deviceList.get(0);
 
-
-        String token = accessToken4.tokenForSystemId(device.getSid().intValue());
-        if (StringUtils.isEmpty(token)) {
-            logger.error("empty huawei token for systemId:{}", device.getSid());
+        HuaweiApp app = huaweiAppMap.get(device.getSid().intValue());
+        HuaweiMessaging huaweiMessaging = HuaweiMessaging.getInstance(app);
+        List<String> tokenListStr =
+                deviceList.stream().map(d -> Huawei4Helper.huaweiVoucher(d)).filter(e -> !e.isEmpty()).collect(Collectors.toList());
+        if (tokenListStr.isEmpty()) {
+            logger.error("Device Token is Empty");
             return;
         }
-
         Map<String, String> hwProperties = Huawei4Helper.huaweiProperties(pushProperties, device.getSid());
-
-        //        String[] tokenArray = deviceList.stream().map(d -> huaweiVoucher(d)).toArray(String[]::new);
-        List<String> tokenListStr =
-                deviceList.stream().map(d -> Huawei4Helper.huaweiVoucher(d)).collect(Collectors.toList());
-
-        String authorization = "Bearer " + token;
-
-        Map body = new HashMap();
-        //true测试环境；false 正式环境
-        body.put("validate_only", false);
         Message message = buildMsg(notification, tokenListStr, hwProperties, passThrough, notifyId);
-        body.put("message", message);
-        logger.debug("{}", JSON.toJSONString(body));
         try {
-            HttpResponse<String> response = Unirest.post(String.format(PUSHURLV4, hwProperties.get("appId"))).header(
-                    "Authorization", authorization).header("Content-Type", "application/json;charset=utf-8").body(JSON.toJSONString(body)).asString();
-            logger.debug("{}", response.getBody());
-        } catch (UnirestException e) {
-            logger.error("{}", e.getMessage());
+            SendResponse response = huaweiMessaging.sendMessage(message);
+            System.out.println(JSON.toJSONString(response));
+
+        } catch (Exception e) {
+            logger.error("{}", e);
         }
+
 
     }
 
@@ -205,4 +219,6 @@ public class Huawei4Push implements Pushable {
     public PushProviderEnum provider() {
         return PushProviderEnum.Huawei4;
     }
+
+
 }

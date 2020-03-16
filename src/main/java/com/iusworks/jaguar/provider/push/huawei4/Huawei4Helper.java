@@ -47,35 +47,19 @@ public class Huawei4Helper {
     }
 
 
-    public static String deviceTokenListString(List<Device> deviceList) {
-        StringBuilder deviceTokenListBuilder = new StringBuilder();
-        deviceTokenListBuilder.append("[");
-        deviceList.forEach((d) -> {
-            String token  =huaweiVoucher(d);
-            if(!StringUtils.isEmpty(token)){
-
-                deviceTokenListBuilder.append("\"");
-                deviceTokenListBuilder.append(token);
-                deviceTokenListBuilder.append("\",");
-            }
-
-        });
-        deviceTokenListBuilder.deleteCharAt(deviceTokenListBuilder.length() - 1);
-        deviceTokenListBuilder.append("]");
-        return deviceTokenListBuilder.toString();
-    }
-
     public static String huaweiVoucher(Device device) {
         Map<String, DevicePlatformVoucher> dvmap = device.getDpv();
         if (dvmap == null) {
             return null;
         }
 
-        DevicePlatformVoucher dpv = dvmap.get(PushProviderEnum.Huawei.getDpvKey());
+        DevicePlatformVoucher dpv = dvmap.get(PushProviderEnum.Huawei4.getDpvKey());
         if (dpv == null) {
             return null;
         }
 
         return dpv.getVoucher();
     }
+
+
 }

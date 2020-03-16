@@ -43,32 +43,32 @@ jaguar:
 #          package: com.ccc680.lottery
 #          action: com.ccc680.lottery.PUSH_RECEIVER
 #        huawei:
-    - systemId: 6
-      apns:
-        topic: sk.guotong.GtOilStorage
-        cerpath: apns/skapp.p12
-        cerpass: 123456
-      androids:
-        leancloud:
-          action: com.gt.app.gtskecard.PUSH_RECEIVER
-          appId: 9ajXYrrbTyOxHu3umHH9ltBr-gzGzoHsz
-          appKey: VxEdYAxlRyhISJ2WB2WemSSn
-          masterKey: S02s56PcQNQOUPYeGbCmS6kK
-        xiaomi:
-          appId: 2882303761517812854
-          appKey: 5201781214854
-          appSecret: HZEppWHURGgtyzSdKM477A==
-          package: com.gt.app.gtskecard
-          action: com.gt.app.gtskecard.PUSH_RECEIVER
-        huawei:
-          appId: 100304015
-          appSecret: cc58e0bb39da1fb1254809967aea2ca9
-          action: com.gt.app.gtskecard.PUSH_RECEIVER
-          appPkgName: com.gt.app.gtskecard
+  #    - systemId: 6
+  #      apns:
+  #        topic: sk.guotong.GtOilStorage
+  #        cerpath: apns/skapp.p12
+  #        cerpass: 123456
+  #      androids:
+  #        leancloud:
+  #          action: com.gt.app.gtskecard.PUSH_RECEIVER
+  #          appId: 9ajXYrrbTyOxHu3umHH9ltBr-gzGzoHsz
+  #          appKey: VxEdYAxlRyhISJ2WB2WemSSn
+  #          masterKey: S02s56PcQNQOUPYeGbCmS6kK
+  #        xiaomi:
+  #          appId: 2882303761517812854
+  #          appKey: 5201781214854
+  #          appSecret: HZEppWHURGgtyzSdKM477A==
+  #          package: com.gt.app.gtskecard
+  #          action: com.gt.app.gtskecard.PUSH_RECEIVER
+  #        huawei:
+  #          appId: 100304015
+  #          appSecret: cc58e0bb39da1fb1254809967aea2ca9
+  #          action: com.gt.app.gtskecard.PUSH_RECEIVER
+  #          appPkgName: com.gt.app.gtskecard
     - systemId: 7
       apns:
-        topic: sk.guotong.GtOilStorage
-        cerpath: apns/skapp.p12
+        topic: com.petroun.vstore
+        cerpath: apns/petroun.p12
         cerpass: 123456
       androids:
         leancloud:
@@ -105,5 +105,6 @@ spring:
 #      uri: "mongodb://201.201.201.174:27017/Jaguar"
       uri: "mongodb://127.0.0.1:27017/Jaguar"
 
-
+#micronaut:
+#  ssl: false
 
