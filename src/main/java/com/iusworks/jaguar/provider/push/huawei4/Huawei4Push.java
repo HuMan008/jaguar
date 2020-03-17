@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @Component
 public class Huawei4Push implements Pushable {
 
-    private static final String ProperitesKey = "huawei4";
+    private static final String ProperitesKey = "huawei";
     private static final String ProperitesKey_param_appId = "appId";
     private static final String ProperitesKey_param_appSecert = "appSecret";
 
@@ -136,8 +136,7 @@ public class Huawei4Push implements Pushable {
         Message message = buildMsg(notification, tokenListStr, hwProperties, passThrough, notifyId);
         try {
             SendResponse response = huaweiMessaging.sendMessage(message);
-            System.out.println(JSON.toJSONString(response));
-
+            logger.info("Hw push {}", JSON.toJSONString(response));
         } catch (Exception e) {
             logger.error("{}", e);
         }
@@ -167,8 +166,7 @@ public class Huawei4Push implements Pushable {
 
             return Message.builder().setData(ObjectHelper.jsonString(map)).setAndroidConfig(androidConfig).addAllToken(tokens).build();
         } else {
-            com.huawei.push.message.Notification huaweiNotication =
-                    com.huawei.push.message.Notification.builder().setTitle(notification.getTitle()).setBody(notification.getAlert()).build();
+            com.huawei.push.message.Notification huaweiNotication = com.huawei.push.message.Notification.builder().setTitle(notification.getTitle()).setBody(StringUtils.isEmpty(notification.getAlert()) ? notification.getExt().getOrDefault("channel_description", "通知") : notification.getAlert()).build();
 
             AndroidNotification androidNotification =
                     AndroidNotification.builder().setDefaultSound(true).setTitle(notification.getTitle()).setBody(notification.getAlert()).setClickAction(clickAction(notification)).setChannelId(notification.getExt().get("channelId")).setNotifySummary(notification.getExt().containsKey("channelName") ? notification.getExt().get("channelName") : "").setStyle(0).setAutoCancel(true).setNotifyId(notifyIdIntValue).setGroup(huaweiProperties.get("appId")).setImportance(Importance.NORMAL.getValue()).setVisibility(Visibility.PUBLIC.getValue()).setUseDefaultLight(true).setUseDefaultVibrate(true).setForegroundShow(false).build();
@@ -217,7 +215,7 @@ public class Huawei4Push implements Pushable {
 
     @Override
     public PushProviderEnum provider() {
-        return PushProviderEnum.Huawei4;
+        return PushProviderEnum.Huawei;
     }
 
 

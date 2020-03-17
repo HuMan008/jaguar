@@ -36,7 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
+//@Component
+@Deprecated
 public class HuaweiPush implements Pushable {
 
     @Autowired

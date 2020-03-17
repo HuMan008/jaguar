@@ -43,8 +43,8 @@ public class PushProviderAnalyzer {
     @Autowired
     private MiPush miPush;
 
-    @Autowired
-    private HuaweiPush huaweiPush;
+    //    @Autowired
+    //    private HuaweiPush huaweiPush;
 
     @Autowired
     private Huawei4Push huawei4Push;
@@ -61,11 +61,11 @@ public class PushProviderAnalyzer {
         prividers.add(applePush);
         prividers.add(miPush);
         prividers.add(leanCloudPush);
-        prividers.add(huaweiPush);
+        //        prividers.add(huaweiPush);
         prividers.add(huawei4Push);
 
         androidProviders.add(miPush);
-        androidProviders.add(huaweiPush);
+        //        androidProviders.add(huaweiPush);
         androidProviders.add(huawei4Push);
         androidProviders.add(leanCloudPush);
 
@@ -74,11 +74,11 @@ public class PushProviderAnalyzer {
     public Pushable pusherFromProvider(PushProviderEnum providerEnum) {
         if (providerEnum == PushProviderEnum.Apple) return applePush;
         if (providerEnum == PushProviderEnum.Xiaomi) return miPush;
-        if (providerEnum == PushProviderEnum.Huawei) return huaweiPush;
+        //        if (providerEnum == PushProviderEnum.Huawei) return huaweiPush;
+        if (providerEnum == PushProviderEnum.Huawei)
+            return huawei4Push;
         if (providerEnum == PushProviderEnum.Leancloud) return leanCloudPush;
         if (providerEnum == PushProviderEnum.Getui) return getuiPush;
-        if(providerEnum == PushProviderEnum.Huawei4) return huawei4Push;
-
         return null;
     }
 
@@ -93,9 +93,7 @@ public class PushProviderAnalyzer {
             return miPush;
         }
 
-        if (huaweiPush.isSystemLevelSupport(inf)) {
-            return huaweiPush;
-        }
+
 
         if (getuiPush.isSystemLevelSupport(inf)) {
             return getuiPush;
@@ -104,6 +102,10 @@ public class PushProviderAnalyzer {
         if(huawei4Push.isSystemLevelSupport(inf)){
             return huawei4Push;
         }
+
+        //        if (huaweiPush.isSystemLevelSupport(inf)) {
+        //            return huaweiPush;
+        //        }
 
 //        return leanCloudPush;
         return null;

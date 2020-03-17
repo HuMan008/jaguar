@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+@Deprecated
 public class HuaweiHelper {
 
     private static Logger logger = LoggerFactory.getLogger(HuaweiHelper.class);

@@ -43,7 +43,7 @@ public class Huawei4Helper {
             return null;
         }
 
-        return androids.get("huawei4");
+        return androids.get("huawei");
     }
 
 
@@ -53,7 +53,7 @@ public class Huawei4Helper {
             return null;
         }
 
-        DevicePlatformVoucher dpv = dvmap.get(PushProviderEnum.Huawei4.getDpvKey());
+        DevicePlatformVoucher dpv = dvmap.get(PushProviderEnum.Huawei.getDpvKey());
         if (dpv == null) {
             return null;
         }

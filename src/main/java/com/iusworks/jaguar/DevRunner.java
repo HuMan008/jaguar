@@ -64,9 +64,9 @@ public class DevRunner {
 
     @Autowired
     private Dispatcher dispatcher;
-
-    @Autowired
-    private HuaweiPush huaweiPush;
+    //
+    //    @Autowired
+    //    private HuaweiPush huaweiPush;
 
     @Autowired
     private Huawei4Push huawei4Push;
@@ -135,7 +135,7 @@ public class DevRunner {
 
         device.setDpv(dpv);
 
-        huaweiPush.push(notification, device, "123");
+        //        huaweiPush.push(notification, device, "123");
     }
 
     public void testMi() {
@@ -248,7 +248,7 @@ public class DevRunner {
         hw.setUpdatedAt(hw.getReqTime());
 
         Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
-        dpv.put(PushProviderEnum.Huawei4.getDpvKey(), hw);
+        dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
         dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), hw);
         dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), null);
 

@@ -33,7 +33,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+//@Component
+@Deprecated
 public class HuaweiAccessToken {
 
     private static final Logger logger = LoggerFactory.getLogger(HuaweiAccessToken.class);
