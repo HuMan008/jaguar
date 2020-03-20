@@ -71,6 +71,12 @@ jaguar:
         cerpath: apns/petroun.p12
         cerpass: 123456
       androids:
+        gt:
+          appId: 0HbIJlpmMHAMdkQ8Gm5oX3
+          appSecret: FBtNUhoHl68ip60KFq5uN4
+          appKey: qLL2PIM9YA8BVjisfL1Iv7
+          packageName: com.getui.demo
+          masterSecret: "7f78l4IN9wAL9XQcyVabc3"
         leancloud:
           action: com.gt.app.gtskecard.PUSH_RECEIVER
           appId: 9ajXYrrbTyOxHu3umHH9ltBr-gzGzoHsz

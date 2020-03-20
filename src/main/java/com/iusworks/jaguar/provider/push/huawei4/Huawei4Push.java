@@ -34,9 +34,6 @@ import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Notification;
 import com.iusworks.jaguar.tools.NotifyIDUtils;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +41,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -126,8 +120,7 @@ public class Huawei4Push implements Pushable {
 
         HuaweiApp app = huaweiAppMap.get(device.getSid().intValue());
         HuaweiMessaging huaweiMessaging = HuaweiMessaging.getInstance(app);
-        List<String> tokenListStr =
-                deviceList.stream().map(d -> Huawei4Helper.huaweiVoucher(d)).filter(e -> !e.isEmpty()).collect(Collectors.toList());
+        List<String> tokenListStr = deviceList.stream().filter(e -> isEmpty(Huawei4Helper.huaweiVoucher(e))).map(d -> Huawei4Helper.huaweiVoucher(d)).collect(Collectors.toList());
         if (tokenListStr.isEmpty()) {
             logger.error("Device Token is Empty");
             return;
@@ -216,6 +209,15 @@ public class Huawei4Push implements Pushable {
     @Override
     public PushProviderEnum provider() {
         return PushProviderEnum.Huawei;
+    }
+
+
+    private static boolean isEmpty(String e) {
+        if (StringUtils.isEmpty(e)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 

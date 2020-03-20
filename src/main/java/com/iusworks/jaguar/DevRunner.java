@@ -15,11 +15,15 @@
 
 package com.iusworks.jaguar;
 
+import com.gexin.rp.sdk.base.IAliasResult;
+import com.gexin.rp.sdk.http.GtPush;
+import com.gexin.rp.sdk.http.IGtPush;
 import com.iusworks.jaguar.dao.DeviceDAO;
 import com.iusworks.jaguar.domain.DeviceState;
 import com.iusworks.jaguar.provider.push.Dispatcher;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.apple.ApplePush;
+import com.iusworks.jaguar.provider.push.getui.GetuiPush;
 import com.iusworks.jaguar.provider.push.huawei.HuaweiPush;
 import com.iusworks.jaguar.provider.push.huawei4.Huawei4Push;
 import com.iusworks.jaguar.provider.push.xiaomi.MiPush;
@@ -343,6 +347,93 @@ public class DevRunner {
 
     }
 
+    @Autowired
+    GetuiPush getuiPush;
+
+    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    public void gttest() {
+        com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
+        device.setSid((short) 7);
+        device.setUid("AAAA");
+        com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
+        hw.setVoucher("ALiIIqG5K3iLC2NT6inNmKcQh_VVaX4MA3nhdNXtwt64RUnN5YRIceh5Buy7XGwxCfd_8TMG-e3hRwb" +
+                "-DZ5f5o8lEpxiE9xeOzTx-zsPb37g_v2oxnQGpTIeR5mL19Cf_g");
+        hw.setState(0);
+        hw.setReqTime(new Date());
+        hw.setUpdatedAt(hw.getReqTime());
+
+        Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
+        dpv.put(PushProviderEnum.Getui.getDpvKey(), hw);
+        //        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), hw);
+        //        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), null);
+
+        Map<String, String> infos = new HashMap<>();
+        infos.put("F", "GT");
+        //        device.setInfos(infos);
+
+        device.setDpv(dpv);
+        String aa = new ObjectId().toHexString();
+        System.out.println(aa);
+        Notification notification = genNotification();
+        Map<String, String> ext = new HashMap<>();
+        ext.put("channelId", "vstore_1");
+        ext.put("channelName", "订单结果通知");
+        ext.put("channelDescription", "加油消费、油卡充值订单结果通知");
+        //        ext.put("notifyId", aa);
+        //        ext.put("intent",
+        //                "#Intent;launchFlags=0x10008000;component=com.petroun.vstore/com.gotoil.home.view.activity
+        // .WelComeActivity;S.notifyIdStr=%s;end");
+
+
+        notification.setExt(ext);
+        getuiPush.push(notification, device, aa);
+
+
+    }
+
+
+    //        @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    public void dispatcherTest() {
+
+        com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
+        device.setSid((short) 7);
+        device.setUid("AAAA");
+        com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
+        hw.setVoucher("ALiIIqG5K3iLC2NT6inNmKcQh_VVaX4MA3nhdNXtwt64RUnN5YRIceh5Buy7XGwxCfd_8TMG-e3hRwb" +
+                "-DZ5f5o8lEpxiE9xeOzTx-zsPb37g_v2oxnQGpTIeR5mL19Cf_g");
+        hw.setState(0);
+        hw.setReqTime(new Date());
+        hw.setUpdatedAt(hw.getReqTime());
+
+        Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
+        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), hw);
+
+        Map<String, String> infos = new HashMap<>();
+        infos.put("F", "vivo");
+        infos.put("M", "PD1619");
+
+        device.setInfos(infos);
+
+        device.setDpv(dpv);
+        device.setType((byte) 2);
+        String aa = new ObjectId().toHexString();
+        System.out.println(aa);
+        Notification notification = genNotification();
+        Map<String, String> ext = new HashMap<>();
+        ext.put("channelId", "vstore_1");
+        ext.put("channelName", "订单结果通知");
+        ext.put("channelDescription", "加油消费、油卡充值订单结果通知");
+        //        ext.put("notifyId", aa);
+        //        ext.put("intent",
+        //                "#Intent;launchFlags=0x10008000;component=com.petroun.vstore/com.gotoil.home.view.activity
+        // .WelComeActivity;S.notifyIdStr=%s;end");
+
+
+        notification.setExt(ext);
+        dispatcher.push(notification, device, aa);
+
+
+    }
 
 }
 

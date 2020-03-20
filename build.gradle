@@ -7,6 +7,10 @@ buildscript {
         maven {
             url "http://nexus.petroun.com:8081/repository/maven-public/"
         }
+        maven {
+            url "http://mvn.gt.igexin.com/nexus/content/repositories/releases/"
+        }
+
     }
 
     dependencies {
@@ -29,6 +33,9 @@ targetCompatibility = 1.8
 repositories {
     maven {
         url "http://nexus.petroun.com:8081/repository/maven-public/"
+    }
+    maven {
+        url "http://mvn.gt.igexin.com/nexus/content/repositories/releases/"
     }
 }
 
@@ -65,4 +72,8 @@ dependencies {
 //    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.3'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.3'
 
+//    compile 'cn.leancloud:java-sdk:0.2.1'
+
+    //个推
+    compile 'com.gexin.platform:gexin-rp-sdk-http:4.1.1.0'
 }
