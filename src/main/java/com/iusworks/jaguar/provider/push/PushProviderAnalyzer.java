@@ -42,8 +42,8 @@ public class PushProviderAnalyzer {
 
     @Autowired
     private Huawei4Push huawei4Push;
-    @Autowired
-    private GetuiPush getuiPush;
+    //    @Autowired
+    //    private GetuiPush getuiPush;
 
 
     private List<Pushable> prividers = new ArrayList();
@@ -68,7 +68,7 @@ public class PushProviderAnalyzer {
         if (providerEnum == PushProviderEnum.Xiaomi) return miPush;
         if (providerEnum == PushProviderEnum.Huawei)
             return huawei4Push;
-        if (providerEnum == PushProviderEnum.Getui) return getuiPush;
+        //        if (providerEnum == PushProviderEnum.Getui) return getuiPush;
         return null;
     }
 
