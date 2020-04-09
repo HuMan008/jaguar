@@ -240,7 +240,7 @@ public class DevRunner {
     }
 */
 
-    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    //        @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void shms4test() {
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
         device.setSid((short) 7);
@@ -253,8 +253,8 @@ public class DevRunner {
 
         Map<String, com.iusworks.jaguar.domain.DevicePlatformVoucher> dpv = new HashMap<>();
         dpv.put(PushProviderEnum.Huawei.getDpvKey(), hw);
-        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), hw);
-        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), null);
+        //        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), hw);
+        //        dpv.put(PushProviderEnum.Xiaomi.getDpvKey(), null);
 
         Map<String, String> infos = new HashMap<>();
         infos.put("F", "honor");
@@ -308,12 +308,12 @@ public class DevRunner {
         miPush.push(notification, device, aa);
     }
 
-    //    @Scheduled(initialDelay = 1000, fixedRate = 10000000)
+    //        @Scheduled(initialDelay = 1000, fixedRate = 10000000)
     public void testApns() {
         com.iusworks.jaguar.domain.Device device = new com.iusworks.jaguar.domain.Device();
         device.setSid((short) 7);
         com.iusworks.jaguar.domain.DevicePlatformVoucher hw = new com.iusworks.jaguar.domain.DevicePlatformVoucher();
-        hw.setVoucher("841d2c83f42fe09a269a24dd27033f27272c7821f32b91f573442873198c2bf2");
+        hw.setVoucher(",i8nm ");
         hw.setState(0);
         hw.setReqTime(new Date());
         hw.setUpdatedAt(hw.getReqTime());
