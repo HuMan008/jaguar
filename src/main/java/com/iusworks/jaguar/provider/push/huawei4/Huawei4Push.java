@@ -28,8 +28,7 @@ import com.huawei.push.reponse.SendResponse;
 import com.huawei.push.util.InitAppUtils;
 import com.iusworks.jaguar.config.PushProperties;
 import com.iusworks.jaguar.domain.Device;
-import com.iusworks.jaguar.domain.DevicePlatformVoucher;
-import com.iusworks.jaguar.helper.ObjectHelper;
+import com.iusworks.jaguar.provider.push.PassThoughMsg;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
 import com.iusworks.jaguar.thrift.Notification;
@@ -41,7 +40,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -157,7 +159,8 @@ public class Huawei4Push implements Pushable {
             AndroidConfig androidConfig =
                     AndroidConfig.builder().setCollapseKey(-1).setUrgency(Urgency.HIGH.getValue()).setBiTag(notification.getExt().get("notifyId")).build();
 
-            return Message.builder().setData(ObjectHelper.jsonString(map)).setAndroidConfig(androidConfig).addAllToken(tokens).build();
+            return Message.builder().setData(new PassThoughMsg(notification.getTitle(), notification.getAlert(),
+                    notification.getExt()).jsonString()).setAndroidConfig(androidConfig).addAllToken(tokens).build();
         } else {
             com.huawei.push.message.Notification huaweiNotication = com.huawei.push.message.Notification.builder().setTitle(notification.getTitle()).setBody(StringUtils.isEmpty(notification.getAlert()) ? notification.getExt().getOrDefault("channel_description", "通知") : notification.getAlert()).build();
 

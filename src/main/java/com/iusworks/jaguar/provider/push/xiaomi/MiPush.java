@@ -20,6 +20,7 @@ import com.iusworks.jaguar.config.push.PushItem;
 import com.iusworks.jaguar.domain.Device;
 import com.iusworks.jaguar.domain.DevicePlatformVoucher;
 import com.iusworks.jaguar.helper.ObjectHelper;
+import com.iusworks.jaguar.provider.push.PassThoughMsg;
 import com.iusworks.jaguar.provider.push.PushDataHelper;
 import com.iusworks.jaguar.provider.push.PushProviderEnum;
 import com.iusworks.jaguar.provider.push.Pushable;
@@ -203,8 +204,8 @@ public class MiPush implements Pushable {
         builder.description(notification.getAlert());
         builder.restrictedPackageName(packageName);
         builder.notifyId(NotifyIDUtils.generatorID(notifyId));
-        builder.payload(PushDataHelper.jsonStringData(notification, appAction));
-
+        builder.payload(new PassThoughMsg(notification.getTitle(), notification.getAlert(), notification.getExt()).jsonString());
+        //        builder.payload(ObjectHelper.jsonString(notification));
         if (passThrough) {
             builder.passThrough(1);
             //            logger.info("Pass Throught=============");
@@ -220,6 +221,13 @@ public class MiPush implements Pushable {
                 builder.extra(Constants.PARAM_CHANNEL_ID,channelId);
             }
             builder.passThrough(0);
+            builder.notifyType(-1);
+            builder.extra(Constants.EXTRA_PARAM_NOTIFY_EFFECT, Constants.NOTIFY_ACTIVITY);
+            if (StringUtils.isNotEmpty(mi.get("intent"))) {
+                builder.extra(Constants.EXTRA_PARAM_INTENT_URI, mi.get("intent"));
+            } else {
+                builder.extra("action", appAction);
+            }
         }
 
         return builder.build();

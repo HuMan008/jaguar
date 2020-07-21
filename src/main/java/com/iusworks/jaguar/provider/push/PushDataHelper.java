@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.iusworks.jaguar.thrift.Notification;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,9 +78,11 @@ public class PushDataHelper {
 
         if (notification.getSound() != null) {
             data.put("sound", notification.getSound());
+            data.put("silent", false);
+        } else {
+            data.put("silent", true);
         }
 
-        data.put("silent", true);
         data.put("alert", notification.getAlert());
 
         return data;
