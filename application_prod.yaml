@@ -2,62 +2,50 @@ jaguar:
   host: 0.0.0.0
   ppport: 18090
   pushs:
-    - systemId: 4
-      apns:
-        topic: guotong.GtOilStorage
-        cerpath: apns/guotong.p12
-        cerpass: 123456
-      androids:
-        leancloud:
-          action: com.gt.app.gtecard.PUSH_RECEIVER
-          appId: p8MUPXn8A5wSYpTI4zvaSJ5n-gzGzoHsz
-          appKey: gOXYfGjgWSOkiaihTR7HlEKw
-          masterKey: Lirf0V30pnNmvkdvLoaubjmY
-        xiaomi:
-          appId: 2882303761517514162
-          appKey: 5121751475162
-          appSecret: T8LT/267JdxWRgpK7+1QMg==
-          package: com.gt.app.gtecard
-          action: com.gt.app.gtecard.PUSH_RECEIVER
-    - systemId: 5
-      apns:
-        topic: cn.ccc680.TVModule
-        cerpath: apns/caipiao.p12
-        cerpass: 654321
-      androids:
-        leancloud:
-          action: com.ccc680.lottery.PUSH_RECEIVER
-          appId: iR8Gw7PIKBtglDwiJBGeBXgz-gzGzoHsz
-          appKey: VUmTpmQgqT2lcALQcdBbNc1f
-          masterKey: h89SUasqidddXG9nUwmrJ6YB
-        xiaomi:
-          appId: 2882303761517620678
-          appKey: 5581762023678
-          appSecret: ZYxFh+YqnbJZHP4RdBXfcw==
-          package: com.ccc680.lottery
-          action: com.ccc680.lottery.PUSH_RECEIVER
     - systemId: 6
       apns:
         topic: sk.guotong.GtOilStorage
         cerpath: apns/skapp.p12
-        cerpass: 123456
+        cerpass: 123457
       androids:
         leancloud:
-          action: com.gt.app.gtskecard.PUSH_RECEIVER
-          appId: 9ajXYrrbTyOxHu3umHH9ltBr-gzGzoHsz
-          appKey: VxEdYAxlRyhISJ2WB2WemSSn
-          masterKey: S02s56PcQNQOUPYeGbCmS6kK
+          action:  
+          appId: ajXYrrbTyOxHu3umHH9ltBr-gz9GzoHsz
+          appKey: VxAxlREdYyhISJ2WB2WemSSn
+          masterKey: 6PS02s5cQNQOUPYeGbCmS6kK
         xiaomi:
-          appId: 2882303761517812854
-          appKey: 5201781214854
-          appSecret: HZEppWHURGgtyzSdKM477A==
-          package: com.gt.app.gtskecard
-          action: com.gt.app.gtskecard.PUSH_RECEIVER
+          appId:  
+          appKey: 
+          appSecret: 
+          package:  
+          action: 
         huawei:
           appId: 100304015
-          appSecret: cc58e0bb39da1fb1254809967aea2ca9
-          action: com.gt.app.gtskecard.PUSH_RECEIVER
-          appPkgName: com.gt.app.gtskecard
+          appSecret: 
+          action: 
+          appPkgName: 
+    - systemId: 7
+      apns:
+        topic: sk.guotong.GtOilStorage
+        cerpath: apns/skapp.p12
+        cerpass: 123457
+      androids:
+        leancloud:
+          action:  
+          appId: ajXYrrbTyOxHu3umHH9ltBr-gz9GzoHsz
+          appKey: VxAxlREdYyhISJ2WB2WemSSn
+          masterKey: 6PS02s5cQNQOUPYeGbCmS6kK
+        xiaomi:
+          appId:  
+          appKey: 
+          appSecret: 
+          package:  
+          action: 
+        huawei:
+          appId: 100304015
+          appSecret: 
+          action: 
+          appPkgName:           
 logging:
   level: info
   path: logs
